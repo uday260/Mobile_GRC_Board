@@ -1,0 +1,28 @@
+{
+  "name": "GRC Reference Dashboard",
+  "short_name": "GRC Ref",
+  "description": "Offline GRC compliance framework reference \u2014 15 frameworks, 500+ controls",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f0f2f5",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "categories": [
+    "productivity",
+    "education"
+  ],
+  "icons": [
+    {
+      "src": "icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
