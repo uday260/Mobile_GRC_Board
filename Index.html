@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#534AB7">
+<title>GRC Super Dashboard</title>
+<style>
+:root{
+  --bg:#f0f2f5;--surf:#fff;--surf2:#f4f5f8;--surf3:#eceef2;
+  --tx:#1a1a2e;--tx2:#4b5563;--tx3:#9ca3af;
+  --bd:#e5e7eb;--bd2:#d1d5db;
+  --ac:#534AB7;--acl:#EEEDFE;--ac2:#3C3489;
+  --fn:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+[data-dark]{
+  --bg:#0d0f18;--surf:#151823;--surf2:#1d2030;--surf3:#252838;
+  --tx:#e2e4ee;--tx2:#8b93a8;--tx3:#555e75;
+  --bd:#252838;--bd2:#2f3449;
+  --ac:#7F77DD;--acl:#26215C;--ac2:#AFA9EC;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:var(--fn);background:var(--bg);color:var(--tx);min-height:100vh}
+button{font-family:var(--fn);border:none;background:none;color:inherit;cursor:pointer}
+a{color:var(--ac);text-decoration:none}
+#hdr{position:sticky;top:0;z-index:40;background:var(--surf);border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;gap:8px;padding:0 14px;height:52px}
+.brand{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.bico{width:34px;height:34px;border-radius:9px;background:var(--acl);display:flex;align-items:center;
+  justify-content:center;font-size:18px;flex-shrink:0}
+.btitle{font-size:14px;font-weight:700;color:var(--tx)}
+.bsub{font-size:10px;color:var(--tx3);margin-top:1px}
+.hbtn{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;background:var(--surf2);border:1px solid var(--bd);color:var(--tx2);
+  font-size:17px;flex-shrink:0;cursor:pointer}
+#modenav{background:var(--surf);border-bottom:1px solid var(--bd);
+  display:flex;overflow-x:auto;padding:8px 14px;gap:6px;position:sticky;top:52px;z-index:39}
+#modenav::-webkit-scrollbar{display:none}
+.mode-btn{flex-shrink:0;display:flex;align-items:center;gap:6px;padding:7px 14px;
+  border-radius:20px;font-size:13px;font-weight:500;border:1.5px solid var(--bd);
+  color:var(--tx2);background:var(--surf2);transition:all .15s;white-space:nowrap}
+.mode-btn.active{background:var(--ac);border-color:var(--ac);color:#fff}
+.mode-btn .mico{font-size:15px}
+
+/* ===== REFERENCE MODE ===== */
+#ref-bar{padding:10px 14px;position:sticky;top:103px;z-index:38;background:var(--bg)}
+#ref-search{width:100%;padding:9px 14px;border-radius:10px;border:1.5px solid var(--bd);
+  background:var(--surf);font-size:14px;color:var(--tx);outline:none}
+#ref-search:focus{border-color:var(--ac)}
+#ref-cats{display:flex;gap:6px;overflow-x:auto;padding:8px 14px 4px;margin:0 -14px}
+#ref-cats::-webkit-scrollbar{display:none}
+.cat-pill{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;
+  border:1px solid var(--bd);background:var(--surf);color:var(--tx2);cursor:pointer;transition:all .15s}
+.cat-pill.active{background:var(--ac);border-color:var(--ac);color:#fff}
+#fw-list{padding:10px 14px 20px}
+.fw-card{background:var(--surf);border:1px solid var(--bd);border-radius:14px;
+  margin-bottom:10px;overflow:hidden}
+.fw-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;
+  user-select:none}
+.fw-head:active{background:var(--surf2)}
+.fw-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:20px;flex-shrink:0}
+.fw-meta{flex:1;min-width:0}
+.fw-name{font-size:14px;font-weight:600;color:var(--tx)}
+.fw-desc{font-size:12px;color:var(--tx2);margin-top:2px;line-height:1.4}
+.fw-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.fw-count{font-size:11px;color:var(--tx3);white-space:nowrap}
+.fw-chevron{font-size:12px;color:var(--tx3);transition:transform .2s;margin-top:2px}
+.fw-chevron.open{transform:rotate(180deg)}
+.cat-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;white-space:nowrap}
+/* expanded body */
+.fw-body{display:none;border-top:1px solid var(--bd)}
+.fw-body.open{display:block}
+/* domain accordion */
+.dom-item{border-bottom:1px solid var(--bd)}
+.dom-item:last-child{border-bottom:none}
+.dom-head{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;
+  background:var(--surf2)}
+.dom-head:active{opacity:.8}
+.dom-num{font-size:11px;font-weight:700;color:var(--ac);min-width:36px;flex-shrink:0}
+.dom-title{font-size:13px;font-weight:600;color:var(--tx);flex:1}
+.dom-count{font-size:11px;color:var(--tx3);flex-shrink:0}
+.dom-arr{font-size:11px;color:var(--tx3);transition:transform .2s;flex-shrink:0}
+.dom-arr.open{transform:rotate(180deg)}
+.dom-body{display:none;padding:10px 14px 14px}
+.dom-body.open{display:block}
+/* control rows */
+.ctrl-row{padding:8px 0;border-bottom:1px solid var(--bd);cursor:pointer}
+.ctrl-row:last-child{border-bottom:none}
+.ctrl-top{display:flex;align-items:flex-start;gap:8px}
+.ctrl-id{font-size:11px;font-weight:700;color:var(--ac);min-width:44px;
+  flex-shrink:0;padding-top:2px;font-family:monospace}
+.ctrl-name{font-size:13px;font-weight:500;color:var(--tx);flex:1;line-height:1.3}
+.ctrl-arr{font-size:10px;color:var(--tx3);flex-shrink:0;margin-top:3px;transition:transform .2s}
+.ctrl-arr.open{transform:rotate(180deg)}
+.ctrl-detail{display:none;margin-top:8px;padding-left:52px}
+.ctrl-detail.open{display:block}
+.ctrl-desc{font-size:12px;color:var(--tx2);line-height:1.6;margin-bottom:8px}
+/* mapping badges */
+.ctrl-maps{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.map-badge{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:500;
+  border:1px solid var(--bd2);color:var(--tx2);background:var(--surf2);white-space:nowrap}
+/* evidence */
+.ctrl-evid-lbl{font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;
+  letter-spacing:.05em;margin-bottom:4px}
+.ctrl-evid-list{display:flex;flex-direction:column;gap:3px}
+.ctrl-evid-item{font-size:11px;color:var(--tx2);display:flex;align-items:flex-start;gap:5px;
+  line-height:1.4}
+.ctrl-evid-item::before{content:"▸";color:var(--ac);flex-shrink:0;font-size:10px;margin-top:2px}
+.bm-btn{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;font-size:16px;color:var(--tx3);cursor:pointer;background:none;border:none}
+.bm-btn.active{color:#f59e0b}
+.fw-bm-row{display:flex;align-items:center;justify-content:flex-end;padding:6px 14px;
+  border-top:1px solid var(--bd);background:var(--acl)}
+.no-results{text-align:center;padding:40px 20px;color:var(--tx3);font-size:14px}
+/* ===== STUDY HUB MODE ===== */
+#study-wrap{padding:14px}
+.study-intro{background:var(--surf);border:1px solid var(--bd);border-radius:14px;
+  padding:16px;margin-bottom:14px}
+.si-title{font-size:16px;font-weight:700;color:var(--tx);margin-bottom:4px}
+.si-desc{font-size:13px;color:var(--tx2);line-height:1.5}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat-c{background:var(--acl);border-radius:10px;padding:10px;text-align:center}
+.stat-v{font-size:20px;font-weight:700;color:var(--ac)}
+.stat-l{font-size:10px;color:var(--tx2);margin-top:2px}
+.book-card{background:var(--surf);border:1px solid var(--bd);border-radius:14px;
+  margin-bottom:10px;overflow:hidden}
+.book-head{display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer}
+.book-ico{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;
+  justify-content:center;font-size:22px;flex-shrink:0}
+.book-meta{flex:1;min-width:0}
+.book-name{font-size:14px;font-weight:700;color:var(--tx)}
+.book-tagline{font-size:12px;color:var(--tx2);margin-top:2px}
+.book-arr{font-size:16px;color:var(--tx3);transition:transform .2s}
+.book-arr.open{transform:rotate(90deg)}
+.book-body{display:none;border-top:1px solid var(--bd)}
+.book-tabs{display:flex;overflow-x:auto;padding:8px 12px;gap:4px;border-bottom:1px solid var(--bd)}
+.book-tabs::-webkit-scrollbar{display:none}
+.btab{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;
+  color:var(--tx2);cursor:pointer;border:1px solid transparent;transition:all .15s}
+.btab.active{background:var(--ac);color:#fff;border-color:var(--ac)}
+.book-panel{padding:14px;display:none}
+.book-panel.active{display:block}
+.sec-lbl{font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;
+  letter-spacing:.06em;margin:14px 0 6px}
+.sec-lbl:first-child{margin-top:0}
+.concept-row{background:var(--surf2);border-radius:10px;padding:10px 12px;margin-bottom:6px}
+.cr-title{font-size:13px;font-weight:600;color:var(--tx)}
+.cr-body{font-size:12px;color:var(--tx2);margin-top:4px;line-height:1.5}
+.raci-table{width:100%;border-collapse:collapse;font-size:12px}
+.raci-table th{background:var(--surf2);padding:6px 8px;text-align:left;font-weight:600;
+  color:var(--tx2);border-bottom:1px solid var(--bd);font-size:11px}
+.raci-table td{padding:6px 8px;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:top}
+.raci-table tr:last-child td{border-bottom:none}
+.raci-r{font-weight:700;color:#dc2626;font-size:11px}
+.raci-a{font-weight:700;color:#d97706;font-size:11px}
+.raci-c{font-weight:700;color:#2563eb;font-size:11px}
+.raci-i{font-weight:700;color:#059669;font-size:11px}
+.process-step{display:flex;gap:10px;margin-bottom:8px}
+.ps-num{width:24px;height:24px;border-radius:50%;background:var(--ac);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
+  flex-shrink:0;margin-top:1px}
+.ps-body{flex:1}
+.ps-title{font-size:13px;font-weight:600;color:var(--tx)}
+.ps-desc{font-size:12px;color:var(--tx2);margin-top:2px;line-height:1.5}
+.ncr-card{background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:10px 12px;margin-bottom:6px}
+[data-dark] .ncr-card{background:#2d1515;border-color:#7f1d1d}
+.ncr-head{font-size:12px;font-weight:700;color:#dc2626}
+[data-dark] .ncr-head{color:#fca5a5}
+.ncr-body{font-size:12px;color:var(--tx2);margin-top:4px;line-height:1.5}
+.ev-item{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--bd)}
+.ev-item:last-child{border-bottom:none}
+.ev-ico{font-size:14px;flex-shrink:0;margin-top:1px}
+.ev-text{font-size:12px;color:var(--tx);line-height:1.4}
+.life-step{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)}
+.life-step:last-child{border-bottom:none}
+.life-num{width:22px;height:22px;border-radius:6px;background:var(--acl);color:var(--ac);
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
+  flex-shrink:0;margin-top:2px}
+.life-body{flex:1}
+.life-title{font-size:13px;font-weight:600;color:var(--tx)}
+.life-desc{font-size:12px;color:var(--tx2);margin-top:2px;line-height:1.5}
+.pol-doc{background:var(--surf2);border-radius:10px;padding:12px;font-size:12px;
+  color:var(--tx2);line-height:1.7;max-height:400px;overflow-y:auto}
+.pol-section{margin-bottom:12px}
+.pol-num{font-weight:700;color:var(--ac);font-size:11px}
+.pol-heading{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:4px}
+.pol-body{color:var(--tx2);font-size:12px;line-height:1.6}
+.pol-annotation{background:var(--acl);border-left:3px solid var(--ac);
+  padding:6px 10px;border-radius:0 6px 6px 0;margin-top:6px;font-size:11px;
+  color:var(--ac2);font-style:italic}
+.res-link{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd)}
+.res-link:last-child{border-bottom:none}
+.res-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.res-body{flex:1}
+.res-name{font-size:13px;font-weight:500;color:var(--tx)}
+.res-url{font-size:11px;color:var(--ac);margin-top:2px}
+.callout{border-radius:10px;padding:10px 12px;display:flex;gap:8px;margin:8px 0;
+  border-left:3px solid var(--ac);background:var(--acl)}
+.callout-ico{font-size:16px;flex-shrink:0;margin-top:1px}
+.callout-body{font-size:12px;color:var(--tx2);line-height:1.5}
+
+/* ===== BOOKMARKS MODE ===== */
+#bm-wrap{padding:14px}
+.bm-empty{text-align:center;padding:60px 20px;color:var(--tx3)}
+.bm-empty .be-ico{font-size:40px;margin-bottom:12px}
+.bm-empty .be-txt{font-size:14px}
+.bm-card{background:var(--surf);border:1px solid var(--bd);border-radius:12px;
+  padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.bm-card-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;
+  justify-content:center;font-size:18px;flex-shrink:0}
+.bm-card-meta{flex:1}
+.bm-card-name{font-size:13px;font-weight:600;color:var(--tx)}
+.bm-card-desc{font-size:11px;color:var(--tx2);margin-top:2px}
+.bm-rm{font-size:17px;color:var(--tx3);cursor:pointer;padding:4px}
+
+.view{display:none}
+.view.active{display:block}
+</style>
+</head>
+<body>
+<div id="hdr">
+  <div class="brand">
+    <div class="bico">🛡️</div>
+    <div>
+      <div class="btitle">GRC Super Dashboard</div>
+      <div class="bsub" id="hdr-sub">19 frameworks · 8 study books</div>
+    </div>
+  </div>
+  <button class="hbtn" id="dark-btn" title="Toggle dark mode" onclick="toggleDark()">🌙</button>
+</div>
+
+<div id="modenav">
+  <button class="mode-btn active" data-mode="ref" onclick="setMode('ref')">
+    <span class="mico">📋</span> Reference
+  </button>
+  <button class="mode-btn" data-mode="study" onclick="setMode('study')">
+    <span class="mico">📚</span> Study Hub
+  </button>
+  <button class="mode-btn" data-mode="bm" onclick="setMode('bm')">
+    <span class="mico">⭐</span> Bookmarks <span id="bm-count" style="margin-left:2px;opacity:.7"></span>
+  </button>
+</div>
+
+<!-- ===== REFERENCE MODE ===== -->
+<div id="view-ref" class="view active">
+  <div id="ref-bar">
+    <input id="ref-search" type="search" placeholder="Search frameworks, controls..." oninput="filterRef()">
+  </div>
+  <div style="padding:0 14px">
+    <div id="ref-cats">
+      <button class="cat-pill active" data-cat="all" onclick="setCat('all')">All</button>
+      <button class="cat-pill" data-cat="security" onclick="setCat('security')">Security</button>
+      <button class="cat-pill" data-cat="privacy" onclick="setCat('privacy')">Privacy</button>
+      <button class="cat-pill" data-cat="risk" onclick="setCat('risk')">Risk</button>
+      <button class="cat-pill" data-cat="ai" onclick="setCat('ai')">AI</button>
+      <button class="cat-pill" data-cat="resilience" onclick="setCat('resilience')">Resilience</button>
+      <button class="cat-pill" data-cat="cloud" onclick="setCat('cloud')">Cloud</button>
+    </div>
+  </div>
+  <div id="fw-list"></div>
+</div>
+
+<!-- ===== STUDY HUB MODE ===== -->
+<div id="view-study" class="view">
+  <div id="study-wrap">
+    <div class="study-intro">
+      <div class="si-title">GRC Study Hub</div>
+      <div class="si-desc">Deep-dive study books for NIST AI RMF, EU AI Act, GDPR, DORA, ISO 42001, NIS2, BSI C5, and Cloud Governance. Each book includes RACI, process flows, NCR examples, evidence checklists, lifecycle stages, policy drafts and document templates.</div>
+      <div class="stats-row">
+        <div class="stat-c"><div class="stat-v">8</div><div class="stat-l">Study books</div></div>
+        <div class="stat-c"><div class="stat-v">25+</div><div class="stat-l">RACI processes</div></div>
+        <div class="stat-c"><div class="stat-v">35+</div><div class="stat-l">Evidence items</div></div>
+      </div>
+    </div>
+    <div id="book-list"></div>
+  </div>
+</div>
+
+<!-- ===== BOOKMARKS MODE ===== -->
+<div id="view-bm" class="view">
+  <div id="bm-wrap"></div>
+</div>
+
+<script>
+const FW = [
+  {id:'iso27001',name:'ISO 27001:2022',icon:'🔐',cat:'security',
+   desc:'Information security management system — 93 controls across 4 Annexes (Org, People, Physical, Tech)',
+   controls:93,
+   doms:[
+     {n:'A.5',t:'Organizational Controls',ctrls:[
+       {id:'A.5.1',name:'Policies for information security',
+        desc:'Information security policies must be defined, approved by management, published and communicated to all relevant personnel and external parties, and reviewed at planned intervals or when significant changes occur.',
+        maps:['NIST CSF PR.IP-1','SOC2 CC1.2','NIST 800-53 PL-1','CIS Control 3'],
+        evid:['Approved IS policy document with management sign-off','Policy review log showing annual or triggered review','Distribution records or intranet publication evidence']},
+       {id:'A.5.9',name:'Inventory of information and other assets',
+        desc:'An inventory of assets associated with information and information processing must be developed and maintained. Each asset must have an identified owner.',
+        maps:['NIST CSF ID.AM-1','NIST 800-53 CM-8','CIS Control 1','SOC2 CC6.1'],
+        evid:['Asset register with owner, classification, and location columns','Quarterly or annual asset review sign-off','CMDB or equivalent tooling output']},
+       {id:'A.5.15',name:'Access control',
+        desc:'Rules to control physical and logical access to information and assets must be established and implemented based on business and information security requirements.',
+        maps:['NIST CSF PR.AC-1','NIST 800-53 AC-1','SOC2 CC6.1','PCI DSS 7.1'],
+        evid:['Access control policy document','Role-based access matrix','Quarterly access review records with approvals']},
+       {id:'A.5.23',name:'Information security for use of cloud services',
+        desc:'Processes for acquisition, use, management and exit from cloud services must be established in accordance with the organisation\'s information security requirements.',
+        maps:['CSA CCM IAM-01','NIST 800-53 SA-9','CIS Control 4','C5 OIS-01'],
+        evid:['Cloud service inventory with security classification','Cloud provider attestations (ISO 27001/SOC 2/C5)','Cloud exit strategy documentation']},
+       {id:'A.5.28',name:'Collection of evidence',
+        desc:'The organisation must establish and implement procedures for identification, collection, acquisition and preservation of information that can serve as evidence.',
+        maps:['NIST 800-53 IR-4','SOC2 CC7.3','PCI DSS 10.3'],
+        evid:['Incident response procedures covering evidence handling','Chain-of-custody log for forensic evidence','SIEM log retention configuration (90 days+ online)']}
+     ]},
+     {n:'A.6',t:'People Controls',ctrls:[
+       {id:'A.6.1',name:'Screening',
+        desc:'Background verification checks on all candidates for employment must be carried out prior to joining, in accordance with laws, regulations and ethics, proportional to the business requirements and classification of information to be accessed.',
+        maps:['NIST 800-53 PS-3','SOC2 CC1.4','NIS2 Art.21(2)(i)'],
+        evid:['Pre-employment screening policy','Third-party screening reports or HR records','Role risk classification matrix']},
+       {id:'A.6.3',name:'Information security awareness, education and training',
+        desc:'All personnel and relevant external parties must receive appropriate awareness education and training, and regular updates in organisational policies and procedures relevant to their job function.',
+        maps:['NIST CSF PR.AT-1','NIST 800-53 AT-2','CIS Control 14','NIS2 Art.21(2)(g)'],
+        evid:['Annual training completion records (>90% staff)','Phishing simulation results','Training content review log']},
+       {id:'A.6.7',name:'Remote working',
+        desc:'Security measures must be implemented when personnel are working remotely to protect information accessed, processed or stored outside the organisation\'s premises.',
+        maps:['NIST 800-53 AC-17','CIS Control 12','SOC2 CC6.6'],
+        evid:['Remote working policy','VPN usage logs and configuration','Endpoint security compliance reports']}
+     ]},
+     {n:'A.7',t:'Physical Controls',ctrls:[
+       {id:'A.7.1',name:'Physical security perimeters',
+        desc:'Security perimeters must be defined and used to protect areas that contain information and other associated assets.',
+        maps:['NIST 800-53 PE-3','SOC2 CC6.4','PCI DSS 9.1','C5 PS-01'],
+        evid:['Site security assessment','CCTV monitoring records','Physical access logs for server rooms']},
+       {id:'A.7.4',name:'Physical security monitoring',
+        desc:'Premises must be continuously monitored for unauthorised physical access.',
+        maps:['NIST 800-53 PE-6','SOC2 CC6.4','PCI DSS 9.4'],
+        evid:['CCTV system with retention configuration','Visitor log and badge issuance records','Security guard patrol logs']}
+     ]},
+     {n:'A.8',t:'Technological Controls',ctrls:[
+       {id:'A.8.2',name:'Privileged access rights',
+        desc:'The allocation and use of privileged access rights must be restricted and managed. Privileged access requires justification, is time-limited where possible, and is subject to more frequent review.',
+        maps:['NIST 800-53 AC-6','CIS Control 5','SOC2 CC6.3','PCI DSS 7.2','C5 IAM-03'],
+        evid:['Privileged access register with business justification','PAM tool configuration and session logs','Quarterly privileged access review with CISO sign-off']},
+       {id:'A.8.5',name:'Secure authentication',
+        desc:'Secure authentication technologies and procedures must be implemented based on access restrictions and the information security topic policy on access control.',
+        maps:['NIST 800-53 IA-2','CIS Control 6','SOC2 CC6.1','PCI DSS 8.3','C5 IAM-06'],
+        evid:['MFA enforcement evidence (IdP config screenshot)','Password policy configuration','Authentication failure alert configuration']},
+       {id:'A.8.7',name:'Protection against malware',
+        desc:'Protection against malware must be implemented and supported by appropriate user awareness.',
+        maps:['NIST CSF DE.CM-4','NIST 800-53 SI-3','CIS Control 10','PCI DSS 5.1'],
+        evid:['Endpoint protection deployment report (100% coverage)','Malware detection and response logs','Signature update verification records']},
+       {id:'A.8.8',name:'Management of technical vulnerabilities',
+        desc:'Information about technical vulnerabilities of information systems must be obtained in a timely fashion, and the organisation\'s exposure to such vulnerabilities must be evaluated and appropriate measures taken to address the associated risk.',
+        maps:['NIST CSF ID.RA-1','NIST 800-53 RA-5','CIS Control 7','PCI DSS 11.3'],
+        evid:['Monthly vulnerability scan reports','Patch SLA policy (Critical 24h/High 7d/Medium 30d)','Remediation tracking in ticketing system']},
+       {id:'A.8.15',name:'Logging',
+        desc:'Logs that record activities, exceptions, faults and other relevant events must be produced, stored, protected and analysed.',
+        maps:['NIST 800-53 AU-2','SOC2 CC7.2','PCI DSS 10.2','NIS2 Art.21(2)(b)'],
+        evid:['SIEM configuration showing log sources','Log retention policy (minimum 12 months)','Log integrity protection configuration']},
+       {id:'A.8.24',name:'Use of cryptography',
+        desc:'Rules for the effective use of cryptography, including management of cryptographic keys, must be defined and implemented.',
+        maps:['NIST 800-53 SC-28','PCI DSS 3.5','C5 CRY-01','GDPR Art.32'],
+        evid:['Cryptographic policy specifying approved algorithms (AES-256, TLS 1.3)','Key management procedure with rotation schedule','Encryption verification for data at rest and in transit']}
+     ]}
+   ]},
+  {id:'nistcsf',name:'NIST CSF 2.0',icon:'🏛️',cat:'security',
+   desc:'Cybersecurity framework — Govern, Identify, Protect, Detect, Respond, Recover with 106 subcategories',
+   controls:106,
+   doms:[
+     {n:'GOVERN',t:'Organisational Governance',ctrls:[
+       {id:'GV.OC',name:'Organisational context established',
+        desc:'The organisational mission is understood and cybersecurity risk management strategy, expectations, and policy are established and communicated.',
+        maps:['ISO 27001 A.5.1','COBIT APO01','NIST 800-53 PL-1'],
+        evid:['Board-approved cybersecurity strategy','Risk appetite statement','Cybersecurity policy suite with sign-off']},
+       {id:'GV.RM',name:'Risk management strategy defined',
+        desc:'The organisation\'s risk tolerance and risk management strategy are established, communicated, and monitored.',
+        maps:['ISO 27001 Clause 6.1','COBIT APO12','NIS2 Art.21(2)(a)'],
+        evid:['Risk management policy','Risk appetite statement approved by board','Risk register with treatment decisions']}
+     ]},
+     {n:'IDENTIFY',t:'Asset & Risk Identification',ctrls:[
+       {id:'ID.AM',name:'Asset management',
+        desc:'Assets (data, hardware, software, systems, facilities, services, people) that enable the organisation to achieve business purposes are identified and managed consistent with their relative importance to organisational objectives and the organisation\'s risk strategy.',
+        maps:['ISO 27001 A.5.9','CIS Control 1-2','NIST 800-53 CM-8'],
+        evid:['Complete asset inventory (hardware, software, data, services)','Asset criticality classification','Owner assigned for each asset class']},
+       {id:'ID.RA',name:'Risk assessment performed',
+        desc:'The organisation understands the cybersecurity risk to organisational operations, assets, and individuals.',
+        maps:['ISO 27001 Clause 6.1.2','NIST 800-53 RA-3','COBIT APO12'],
+        evid:['Annual risk assessment report','Risk register with likelihood/impact scores','Threat intelligence inputs documented']}
+     ]},
+     {n:'PROTECT',t:'Safeguards',ctrls:[
+       {id:'PR.AA',name:'Identity management and access control',
+        desc:'Access to physical and logical assets is limited to authorised users, services, and hardware and managed commensurate with the assessed risk of unauthorised access.',
+        maps:['ISO 27001 A.5.15','NIST 800-53 AC-2','CIS Control 5-6','PCI DSS 7'],
+        evid:['Access control policy','Quarterly access reviews','MFA enforcement records','Privileged access management logs']},
+       {id:'PR.DS',name:'Data security',
+        desc:'Data are managed consistent with the organisation\'s risk strategy to protect the confidentiality, integrity, and availability of information.',
+        maps:['ISO 27001 A.8.24','GDPR Art.32','PCI DSS 3-4','NIST 800-53 SC-28'],
+        evid:['Data classification policy','Encryption at rest verification','DLP policy configuration','Data handling procedures']}
+     ]},
+     {n:'DETECT',t:'Anomaly Detection',ctrls:[
+       {id:'DE.CM',name:'Continuous monitoring',
+        desc:'Assets are monitored to find anomalies, indicators of compromise, and other potentially adverse events.',
+        maps:['ISO 27001 A.8.15','NIST 800-53 SI-4','SOC2 CC7.2','NIS2 Art.21(2)(b)'],
+        evid:['SIEM platform with active rules','Security monitoring coverage report','Alert escalation procedures']}
+     ]},
+     {n:'RESPOND',t:'Incident Response',ctrls:[
+       {id:'RS.MA',name:'Incident management',
+        desc:'Responses to detected cybersecurity incidents are managed.',
+        maps:['ISO 27001 A.5.26','NIST 800-53 IR-4','NIS2 Art.23','DORA Art.17'],
+        evid:['Incident response plan','IR playbooks per incident type','Tabletop exercise records','Post-incident review reports']}
+     ]}
+   ]},
+  {id:'gdpr',name:'GDPR',icon:'🔏',cat:'privacy',
+   desc:'EU data protection regulation — 8 principles, 8 data subject rights, DPIA and 72h breach obligations',
+   controls:47,
+   doms:[
+     {n:'Art.5-11',t:'Principles & Lawful Basis',ctrls:[
+       {id:'Art.5',name:'Principles of processing',
+        desc:'Personal data must be: lawful/fair/transparent; purpose-limited; minimised; accurate; storage-limited; integrity & confidentiality protected; accountable. All seven principles must be demonstrably met.',
+        maps:['ISO 27001 A.5.1','NIST 800-53 AR-2','HIPAA §164.502'],
+        evid:['Privacy policy covering all 7 principles','ROPA demonstrating purpose limitation','Data retention schedule enforced by technical controls']},
+       {id:'Art.6',name:'Lawful basis for processing',
+        desc:'One of six bases must apply for each processing activity: consent, contract, legal obligation, vital interests, public task, or legitimate interests (LIA required). Special category data requires an additional Art.9 condition.',
+        maps:['HIPAA §164.508','NIST 800-53 AR-3'],
+        evid:['ROPA with lawful basis column completed per activity','Legitimate interests assessments (LIA) for applicable activities','Consent records with timestamp and withdrawal mechanism']}
+     ]},
+     {n:'Art.13-22',t:'Data Subject Rights',ctrls:[
+       {id:'Art.15',name:'Right of access',
+        desc:'Data subjects have the right to obtain confirmation of whether personal data is being processed, access to that data, and supplementary information. Response within 1 month.',
+        maps:['HIPAA §164.524','NIST 800-53 IP-2'],
+        evid:['DSR handling procedure with 1-month SLA','DSR log showing all requests and response dates','Identity verification procedure for requestors']},
+       {id:'Art.17',name:'Right to erasure',
+        desc:'Data subjects can request erasure where data is no longer necessary, consent is withdrawn, or processing is unlawful. Technical capability to erase across all systems (including backups) is required.',
+        maps:['NIST 800-53 DM-2','ISO 27001 A.8.10'],
+        evid:['Erasure procedure covering all systems including backups','DSR log with erasure completion confirmation','Technical capability demonstrated for structured and unstructured data']},
+       {id:'Art.35',name:'Data Protection Impact Assessment',
+        desc:'DPIA required when processing is likely to result in high risk — systematic profiling, large-scale special categories, or systematic public monitoring always require one. High residual risk after DPIA requires prior consultation with supervisory authority.',
+        maps:['NIST 800-53 RA-8','ISO 27001 Clause 6.1','NIST AI RMF MAP'],
+        evid:['DPIA register with screening results for all processing activities','Completed DPIA reports for qualifying activities','DPO consultation records','Prior consultation documentation where required']}
+     ]},
+     {n:'Art.24-43',t:'Controller Obligations',ctrls:[
+       {id:'Art.28',name:'Processor obligations',
+        desc:'Processing by a processor must be governed by a binding contract (DPA) that sets out the subject-matter, duration, nature, and purpose of the processing. Processors must only act on controller instructions.',
+        maps:['NIST 800-53 SA-9','ISO 27001 A.5.19','C5 SSO-04'],
+        evid:['Data Processing Agreements (DPAs) signed with all processors','Processor inventory linked to ROPA','Annual processor due diligence review']},
+       {id:'Art.32',name:'Security of processing',
+        desc:'Appropriate technical and organisational measures must be implemented to ensure a level of security appropriate to the risk, including encryption, pseudonymisation, resilience, and testing.',
+        maps:['ISO 27001 A.8.24','NIST 800-53 SC-28','HIPAA §164.312'],
+        evid:['Encryption policy and implementation evidence','Pseudonymisation documentation where applicable','Annual security assessment or penetration test']},
+       {id:'Art.33',name:'Notification of personal data breach',
+        desc:'A personal data breach must be notified to the supervisory authority within 72 hours of becoming aware of it, unless it is unlikely to result in risk to individuals. Late notification must include reasons for delay.',
+        maps:['NIS2 Art.23','DORA Art.19','HIPAA §164.404'],
+        evid:['Breach response procedure with 72h timeline','Breach log (all incidents, even non-notifiable)','Notification records with submission timestamps']}
+     ]}
+   ]},
+  {id:'nistspr',name:'NIST SP 800-53 r5',icon:'🏢',cat:'security',
+   desc:'Federal security and privacy controls — 20 control families covering all aspects of system security',
+   controls:1000,
+   doms:[
+     {n:'AC',t:'Access Control',ctrls:[
+       {id:'AC-2',name:'Account management',
+        desc:'Manage system accounts, group memberships, privileges, workflow, notifications, deactivations, and authorisations. Includes provisioning, modification, monitoring, and removal.',
+        maps:['ISO 27001 A.5.15','CIS Control 5','SOC2 CC6.2'],
+        evid:['Account provisioning and de-provisioning workflow','Orphan account scan results','Quarterly access review with manager sign-off']},
+       {id:'AC-6',name:'Least privilege',
+        desc:'Employ the principle of least privilege, allowing only authorised accesses for users and processes necessary to accomplish assigned tasks.',
+        maps:['ISO 27001 A.8.2','CIS Control 6','SOC2 CC6.3','PCI DSS 7.2'],
+        evid:['Role definitions with minimum required permissions','Privileged account justification records','Annual least-privilege review results']}
+     ]},
+     {n:'IA',t:'Identification and Authentication',ctrls:[
+       {id:'IA-2',name:'Identification and authentication (org users)',
+        desc:'Uniquely identify and authenticate organisational users and associate that unique identification with processes acting on behalf of those users. MFA required for all privileged access and remote access.',
+        maps:['ISO 27001 A.8.5','CIS Control 6','SOC2 CC6.1','PCI DSS 8.3'],
+        evid:['MFA deployment report showing coverage','No shared accounts evidence (IdP config)','Authentication failure monitoring alerts']},
+       {id:'IA-5',name:'Authenticator management',
+        desc:'Manage system authenticators including passwords, tokens, PKI certificates, and key cards. Enforce minimum password complexity and restrict reuse.',
+        maps:['ISO 27001 A.8.5','CIS Control 5','PCI DSS 8.3'],
+        evid:['Password policy configuration (length, complexity, history)','Credential rotation schedule for service accounts','MFA token inventory']}
+     ]},
+     {n:'RA',t:'Risk Assessment',ctrls:[
+       {id:'RA-3',name:'Risk assessment',
+        desc:'Conduct a risk assessment that includes the likelihood and magnitude of harm from the operation of the information system, and report results to senior leadership.',
+        maps:['ISO 27001 Clause 6.1.2','NIST CSF ID.RA','COBIT APO12'],
+        evid:['Annual risk assessment report with methodology documented','Risk register with likelihood/impact/treatment','Senior leadership sign-off on residual risk']},
+       {id:'RA-5',name:'Vulnerability monitoring and scanning',
+        desc:'Monitor and scan for vulnerabilities in the information system and hosted applications periodically and when new vulnerabilities are identified.',
+        maps:['ISO 27001 A.8.8','CIS Control 7','PCI DSS 11.3'],
+        evid:['Automated scan schedule and tool configuration','Scan results with remediation tracking','SLA compliance report (Critical/High/Medium/Low patch times)']}
+     ]},
+     {n:'IR',t:'Incident Response',ctrls:[
+       {id:'IR-4',name:'Incident handling',
+        desc:'Implement an incident handling capability that includes preparation, detection, analysis, containment, eradication, and recovery.',
+        maps:['ISO 27001 A.5.26','NIST CSF RS.MA','NIS2 Art.23','DORA Art.17'],
+        evid:['Incident response plan with all six phases','IR playbooks per threat category','Tabletop exercise conducted within 12 months','Post-incident review reports']}
+     ]},
+     {n:'SI',t:'System and Information Integrity',ctrls:[
+       {id:'SI-3',name:'Malicious code protection',
+        desc:'Employ malicious code protection mechanisms at system entry and exit points to detect and eradicate malicious code.',
+        maps:['ISO 27001 A.8.7','CIS Control 10','PCI DSS 5'],
+        evid:['AV/EDR deployment coverage report (100% endpoints)','Real-time protection status dashboard','Incident log from AV detections']},
+       {id:'SI-4',name:'System monitoring',
+        desc:'Monitor the information system to detect attacks and indicators of potential attacks, and unauthorised local, network, and remote connections.',
+        maps:['ISO 27001 A.8.15','NIST CSF DE.CM','SOC2 CC7.2'],
+        evid:['SIEM alert rule inventory','Security monitoring coverage map','Weekly/monthly monitoring report']}
+     ]}
+   ]},
+  {id:'pcidss',name:'PCI DSS v4.0',icon:'💳',cat:'security',
+   desc:'Payment card data security — 12 requirements, 389 controls protecting cardholder data environments',
+   controls:389,
+   doms:[
+     {n:'R1-2',t:'Network Security',ctrls:[
+       {id:'R1',name:'Install and maintain network security controls',
+        desc:'Network security controls (NSCs) restrict inbound and outbound traffic to only what is necessary for the cardholder data environment (CDE). All traffic in/out of CDE must pass through an NSC.',
+        maps:['ISO 27001 A.8.20','NIST 800-53 SC-7','CIS Control 12'],
+        evid:['Firewall rule set review (quarterly)','Network segmentation diagram showing CDE boundary','Change management records for firewall rules']},
+       {id:'R2',name:'Apply secure configurations',
+        desc:'System components are protected from known vulnerabilities by developing configuration standards to address known security vulnerabilities and by keeping software protected from known exploits.',
+        maps:['ISO 27001 A.8.9','CIS Benchmarks','NIST 800-53 CM-6'],
+        evid:['Hardening standards per OS/technology','Configuration compliance scan results','Deviation register with risk acceptance']}
+     ]},
+     {n:'R3-4',t:'Data Protection',ctrls:[
+       {id:'R3',name:'Protect stored account data',
+        desc:'Primary Account Numbers (PANs) must be protected wherever stored. Encryption, truncation, masking, or hashing are required. Sensitive authentication data must not be stored after authorisation.',
+        maps:['ISO 27001 A.8.24','GDPR Art.32','NIST 800-53 SC-28'],
+        evid:['PAN discovery scan results showing no unexpected storage','Encryption key management documentation','Data retention and disposal procedure']},
+       {id:'R4',name:'Protect cardholder data in transit',
+        desc:'Strong cryptography must be used to safeguard PANs during transmission over open, public networks.',
+        maps:['ISO 27001 A.8.24','NIST 800-53 SC-8','GDPR Art.32'],
+        evid:['TLS configuration scan (no TLS <1.2 accepted)','Certificate inventory and expiry monitoring','Network traffic inspection evidence']}
+     ]},
+     {n:'R7-9',t:'Access Control',ctrls:[
+       {id:'R7',name:'Restrict access to system components by business need',
+        desc:'Access to system components and cardholder data is limited to only those individuals whose job requires such access. Access must be formally authorised, documented, and reviewed.',
+        maps:['ISO 27001 A.5.15','NIST 800-53 AC-3','NIST CSF PR.AA'],
+        evid:['Role-based access matrix for CDE systems','Annual access review results','Formally documented access requests with approvals']},
+       {id:'R8',name:'Identify users and authenticate access',
+        desc:'All users with access to system components are assigned a unique ID. Authentication factors must meet complexity and management requirements. MFA required for all access to CDE.',
+        maps:['ISO 27001 A.8.5','NIST 800-53 IA-2','NIST CSF PR.AA'],
+        evid:['Unique user ID policy','MFA enforcement for CDE access','Service account inventory with password rotation evidence']}
+     ]},
+     {n:'R10-12',t:'Monitoring, Testing & Policy',ctrls:[
+       {id:'R10',name:'Log and monitor all access to system components',
+        desc:'Logging mechanisms must be in place and active to track access to network resources and cardholder data. Logs must be reviewed daily.',
+        maps:['ISO 27001 A.8.15','NIST 800-53 AU-2','NIST CSF DE.CM'],
+        evid:['Log aggregation configuration showing all CDE systems','Daily log review evidence or automated alerting','Log retention (12 months minimum, 3 months online)']},
+       {id:'R11',name:'Test security of systems and networks regularly',
+        desc:'Vulnerabilities in systems and networks must be identified and addressed through periodic scanning, penetration testing, and intrusion detection.',
+        maps:['ISO 27001 A.8.8','NIST 800-53 CA-8','CIS Control 18'],
+        evid:['Quarterly internal vulnerability scans','Annual penetration test report (internal + external + segmentation)','Remediation tracking against scan findings']}
+     ]}
+   ]},
+  {id:'nis2',name:'NIS2 Directive',icon:'🇪🇺',cat:'risk',
+   desc:'EU cybersecurity for essential & important entities — 10 mandatory measures, Art.20 board liability',
+   controls:35,
+   doms:[
+     {n:'Art.20',t:'Management Accountability',ctrls:[
+       {id:'Art.20.1',name:'Management body approval',
+        desc:'The management body of essential and important entities must approve the cybersecurity risk management measures and oversee their implementation. Management body members are personally liable for infringements.',
+        maps:['ISO 27001 Clause 5.1','NIST CSF GV.RM','COBIT EDM01'],
+        evid:['Board minutes with cybersecurity agenda item and approval resolution','Named board member as cybersecurity sponsor','Annual cybersecurity report to board']},
+       {id:'Art.20.2',name:'Management body training',
+        desc:'Members of the management body are required to follow training, and shall encourage the entities they manage to offer similar training to their employees on a regular basis.',
+        maps:['ISO 27001 A.6.3','NIST 800-53 AT-3','NIST CSF GV.RM'],
+        evid:['Management body training attendance records','Training syllabus covering NIS2 obligations','Employee training completion rates']}
+     ]},
+     {n:'Art.21',t:'Ten Mandatory Security Measures',ctrls:[
+       {id:'Art.21.2a',name:'Risk analysis and IS policies',
+        desc:'Entities must have documented risk analysis procedures and a comprehensive set of information security policies, approved by the management body.',
+        maps:['ISO 27001 Clause 6.1','NIST CSF GV.RM','NIST 800-53 RA-3'],
+        evid:['Annual risk assessment documentation','IS policy suite covering all risk areas','Management body sign-off on policies']},
+       {id:'Art.21.2b',name:'Incident handling',
+        desc:'Procedures for detecting, analysing, containing, and recovering from cybersecurity incidents, including post-incident review and improvement.',
+        maps:['ISO 27001 A.5.26','NIST CSF RS.MA','DORA Art.17'],
+        evid:['Incident response plan','IR playbooks','Tabletop exercise records (annual)','Incident log with resolution outcomes']},
+       {id:'Art.21.2d',name:'Supply chain security',
+        desc:'Security measures relating to the relationships between entities and their direct suppliers or service providers — security aspects of contracts, assessments, and monitoring.',
+        maps:['ISO 27001 A.5.19','NIST 800-53 SA-12','DORA Art.28'],
+        evid:['Supplier cybersecurity questionnaire or assessment','Contractual security clauses with critical suppliers','Supplier risk register']},
+       {id:'Art.21.2i',name:'Cryptography and encryption',
+        desc:'Policies and measures on the use of cryptography and, where appropriate, encryption to protect confidentiality, integrity, and authenticity.',
+        maps:['ISO 27001 A.8.24','NIST 800-53 SC-28','C5 CRY-01','GDPR Art.32'],
+        evid:['Cryptography policy specifying approved algorithms','Encryption implementation evidence (at rest + in transit)','Key management procedure']}
+     ]},
+     {n:'Art.23',t:'Incident Reporting',ctrls:[
+       {id:'Art.23.1',name:'Significant incident notification cascade',
+        desc:'Three-step cascade: (1) Early warning within 24h of awareness — was it malicious, cross-border impact? (2) Incident notification within 72h with initial assessment. (3) Final report within 1 month with root cause and corrective measures.',
+        maps:['DORA Art.19','GDPR Art.33','ISO 27001 A.5.26'],
+        evid:['Significant incident classification criteria documented','24h/72h notification workflow with named roles','Incident notification records with submission timestamps','Final incident reports with root cause analysis']}
+     ]}
+   ]},
+  {id:'hipaa',name:'HIPAA',icon:'🏥',cat:'privacy',
+   desc:'US health data protection — Security Rule, Privacy Rule, and Breach Notification requirements',
+   controls:75,
+   doms:[
+     {n:'§164.308',t:'Administrative Safeguards',ctrls:[
+       {id:'§164.308(a)(1)',name:'Security management process',
+        desc:'Implement policies and procedures to prevent, detect, contain, and correct security violations. Includes risk analysis, risk management, sanction policy, and information system activity review.',
+        maps:['ISO 27001 Clause 6.1','NIST 800-53 RA-3','NIST CSF ID.RA'],
+        evid:['Annual risk analysis documentation','Risk management plan with treatment decisions','Security incident sanction policy']},
+       {id:'§164.308(a)(5)',name:'Security awareness and training',
+        desc:'Implement a security awareness and training program for all members of the workforce including management.',
+        maps:['ISO 27001 A.6.3','NIST 800-53 AT-2','NIS2 Art.21(2)(g)'],
+        evid:['Annual training completion records','Training content covering PHI handling','Phishing simulation results']}
+     ]},
+     {n:'§164.312',t:'Technical Safeguards',ctrls:[
+       {id:'§164.312(a)',name:'Access control',
+        desc:'Implement technical policies and procedures for electronic information systems that maintain ePHI to allow access only to persons or software programs that have been granted access rights.',
+        maps:['ISO 27001 A.5.15','NIST 800-53 AC-2','PCI DSS 7'],
+        evid:['Unique user ID enforcement','Emergency access procedures','Automatic logoff configuration','Encryption and decryption capability']},
+       {id:'§164.312(e)',name:'Transmission security',
+        desc:'Implement technical security measures to guard against unauthorised access to ePHI that is being transmitted over an electronic communications network.',
+        maps:['ISO 27001 A.8.24','NIST 800-53 SC-8','GDPR Art.32'],
+        evid:['TLS 1.2+ enforcement for ePHI transmission','VPN configuration for remote ePHI access','Email encryption for ePHI']}
+     ]}
+   ]},
+  {id:'dora',name:'DORA',icon:'🏦',cat:'resilience',
+   desc:'EU Digital Operational Resilience Act for financial sector — 5 pillars, binding on banks/insurers/investment firms',
+   controls:46,
+   doms:[
+     {n:'Art.5-14',t:'ICT Risk Management',ctrls:[
+       {id:'Art.5',name:'ICT risk management framework — board ownership',
+        desc:'The management body defines, approves, oversees, and is responsible for the ICT risk management framework. Board members must maintain sufficiently up-to-date knowledge on ICT risk.',
+        maps:['NIS2 Art.20','ISO 27001 Clause 5.1','NIST CSF GV.RM','COBIT EDM01'],
+        evid:['Board-approved ICT risk management policy','Board training records on ICT risk','Quarterly ICT risk reports to board']},
+       {id:'Art.9',name:'Protection and detection',
+        desc:'Financial entities must have ICT systems and tools that are appropriate, reliable, and have sufficient capacity. Detection mechanisms must identify anomalous activities including network performance and ICT-related incidents.',
+        maps:['ISO 27001 A.8.15','NIST 800-53 SI-4','NIS2 Art.21(2)(b)'],
+        evid:['SIEM deployment covering all critical systems','Anomaly detection alert configuration','Capacity monitoring reports']},
+       {id:'Art.11',name:'Recovery and restoration',
+        desc:'Financial entities must have ICT business continuity plans with RTO and RPO objectives. Backup policies must ensure recoverability. Recovery capabilities must be tested.',
+        maps:['ISO 22301 §8','ISO 27001 A.5.30','NIS2 Art.21(2)(c)'],
+        evid:['ICT BCP with documented RTO/RPO per system','Backup configuration and retention records','Annual DR test results with RTO/RPO achieved']}
+     ]},
+     {n:'Art.17-23',t:'Incident Reporting',ctrls:[
+       {id:'Art.19',name:'Three-step incident reporting to regulators',
+        desc:'Major ICT incidents: Early warning within 4h of awareness, intermediate report within 72h, final report within 1 month. Clock starts from awareness — not full discovery. Regulator is competent authority (ECB, EBA, ESMA, national CA).',
+        maps:['NIS2 Art.23','GDPR Art.33','ISO 27001 A.5.26'],
+        evid:['Major incident classification criteria (Art.18)','4h/72h notification procedure with named roles','Incident notification records with timestamps','Final reports with root cause and corrective actions']}
+     ]},
+     {n:'Art.24-27',t:'Resilience Testing',ctrls:[
+       {id:'Art.24',name:'Basic digital operational resilience testing',
+        desc:'All in-scope entities must perform basic testing including vulnerability assessments and scans, network security assessments, gap analyses, and scenario-based tests. Annual minimum frequency.',
+        maps:['ISO 27001 A.8.8','NIST 800-53 CA-8','PCI DSS 11.3'],
+        evid:['Annual vulnerability assessment report','Scenario-based resilience test results','Remediation tracking for findings']},
+       {id:'Art.26',name:'Advanced testing (TLPT)',
+        desc:'Significant entities must perform Threat-Led Penetration Testing (TLPT) every 3 years using TIBER-EU methodology. Scope must cover live production systems. Results submitted to competent authority.',
+        maps:['PCI DSS 11.4','ISO 27001 A.8.8','NIST 800-53 CA-8'],
+        evid:['TLPT scope document approved by regulator','TLPT report from accredited provider','Remediation plan for TLPT findings','Attestation from competent authority']}
+     ]},
+     {n:'Art.28-30',t:'Third-Party ICT Risk',ctrls:[
+       {id:'Art.28',name:'ICT third-party risk management',
+        desc:'Financial entities must maintain a register of all ICT third-party service providers. Pre-contractual due diligence required. Cloud providers used for critical functions must be included and may be subject to direct oversight by ESAs.',
+        maps:['ISO 27001 A.5.19','NIS2 Art.21(2)(d)','NIST 800-53 SA-9'],
+        evid:['ICT third-party register listing all providers','Due diligence records (C5/SOC 2/ISO 27001 attestations)','Critical vs non-critical provider classification']},
+       {id:'Art.30',name:'Key contractual provisions',
+        desc:'Contracts with ICT third parties providing critical services must contain specific provisions: full description of services, service levels, data location, audit rights, exit strategy, incident notification, business continuity cooperation.',
+        maps:['GDPR Art.28','NIS2 Art.21(2)(d)','ISO 27001 A.5.20'],
+        evid:['Contract checklist verified against Art.30 requirements','Contracts for top 5 critical providers reviewed','Exit strategy documentation per critical provider']}
+     ]}
+   ]},
+  {id:'soc2',name:'SOC 2',icon:'📊',cat:'security',
+   desc:'AICPA trust service criteria — Security, Availability, Processing Integrity, Confidentiality, Privacy',
+   controls:64,
+   doms:[
+     {n:'CC1',t:'Control Environment',ctrls:[
+       {id:'CC1.1',name:'COSO principle 1 — commitment to integrity',
+        desc:'The entity demonstrates a commitment to integrity and ethical values.',
+        maps:['ISO 27001 A.5.1','NIST CSF GV.OC','COBIT EDM01'],
+        evid:['Code of conduct signed by all staff','Ethics policy','Whistleblower policy']},
+       {id:'CC1.4',name:'COSO principle 4 — commitment to competence',
+        desc:'The entity demonstrates a commitment to attract, develop, and retain competent individuals in alignment with objectives.',
+        maps:['ISO 27001 A.6.3','NIST 800-53 AT-2'],
+        evid:['Role-specific competency frameworks','Training records aligned to role requirements','Performance review documentation']}
+     ]},
+     {n:'CC6',t:'Logical and Physical Access',ctrls:[
+       {id:'CC6.1',name:'Logical access security',
+        desc:'The entity implements logical access security software, infrastructure, and architectures over protected information assets to protect them from security events to meet the entity\'s objectives.',
+        maps:['ISO 27001 A.5.15','NIST 800-53 AC-2','PCI DSS 7'],
+        evid:['Access control policy','Role-based access model documentation','User provisioning workflow']},
+       {id:'CC6.6',name:'External access controls',
+        desc:'Logical access security measures restrict access to information assets, including those in the cloud, from persons acting in roles not requiring such access.',
+        maps:['ISO 27001 A.6.7','NIST 800-53 AC-17','CIS Control 12'],
+        evid:['VPN/zero-trust configuration','Remote access policy','Third-party access review records']}
+     ]},
+     {n:'CC7',t:'System Operations & Incident Response',ctrls:[
+       {id:'CC7.2',name:'Monitor system components',
+        desc:'The entity monitors system components and the operation of those components for anomalies that are indicative of malicious acts, natural disasters, and errors affecting the entity\'s ability to meet its objectives.',
+        maps:['ISO 27001 A.8.15','NIST CSF DE.CM','NIST 800-53 SI-4'],
+        evid:['SIEM configuration and coverage','Detection rule inventory','Alert review and escalation records']}
+     ]}
+   ]},
+  {id:'iso22301',name:'ISO 22301:2019',icon:'♻️',cat:'resilience',
+   desc:'Business continuity management system — resilience through disruption planning, testing, and recovery',
+   controls:31,
+   doms:[
+     {n:'§6-8',t:'BIA & Planning',ctrls:[
+       {id:'§8.2.2',name:'Business impact analysis',
+        desc:'The organisation must assess the impact of disruption over time for its prioritised activities, determine the maximum tolerable period of disruption (MTPD), and establish recovery time objectives (RTOs).',
+        maps:['DORA Art.11','ISO 27001 A.5.30','NIST 800-53 CP-2'],
+        evid:['BIA report with MTPD per critical process','RTO/RPO defined per system tier','BIA review cycle documented']},
+       {id:'§8.4',name:'Business continuity procedures',
+        desc:'The organisation must establish documented procedures for how it will continue or recover critical activities during and after disruption, including crisis communications and stakeholder notification.',
+        maps:['DORA Art.11','NIS2 Art.21(2)(c)','NIST 800-53 CP-10'],
+        evid:['Business continuity plan documentation','Crisis communications plan','Escalation procedure with named contacts']}
+     ]},
+     {n:'§8.5-9',t:'Testing & Review',ctrls:[
+       {id:'§8.5',name:'Exercise and testing programme',
+        desc:'The organisation must have a programme of exercises and tests to validate the effectiveness of BCPs, identify gaps, and train participants.',
+        maps:['DORA Art.24','ISO 27001 A.5.30','NIST 800-53 CP-4'],
+        evid:['Annual exercise programme','Exercise scenario documentation','Post-exercise after action report with improvement actions']}
+     ]}
+   ]},
+  {id:'cobit',name:'COBIT 2019',icon:'🏗️',cat:'risk',
+   desc:'IT governance framework — 40 objectives across Governance and Management domains',
+   controls:40,
+   doms:[
+     {n:'EDM',t:'Evaluate, Direct & Monitor',ctrls:[
+       {id:'EDM01',name:'Managed governance framework',
+        desc:'Analyse and articulate the requirements for the governance of enterprise IT, and put in place and maintain effective enabling structures, principles, processes and practices.',
+        maps:['ISO 27001 Clause 5','NIST CSF GV.OC','SOC2 CC1.1'],
+        evid:['IT governance charter','Governance committee terms of reference','Board IT risk reporting cadence']},
+       {id:'EDM03',name:'Managed risk optimisation',
+        desc:'Ensure that IT-related enterprise risk does not exceed risk appetite and risk tolerance, and that the impact of IT risk to enterprise value is identified and managed.',
+        maps:['ISO 27001 Clause 6.1','NIST CSF GV.RM','NIST 800-53 RA-3'],
+        evid:['IT risk register','Risk appetite statement with quantified thresholds','Risk treatment decision records']}
+     ]},
+     {n:'APO/DSS',t:'Plan, Operate & Support',ctrls:[
+       {id:'APO12',name:'Managed risk',
+        desc:'Continually identify, assess and reduce IT-related risk within levels of tolerance set by executive management.',
+        maps:['ISO 27001 Clause 6.1','NIST 800-53 RA-3','NIST CSF ID.RA'],
+        evid:['Risk assessment methodology','Risk register with quarterly updates','Risk escalation procedure']},
+       {id:'DSS05',name:'Managed security services',
+        desc:'Protect enterprise information to maintain the level of information security risk acceptable to the enterprise in accordance with the security policy.',
+        maps:['ISO 27001 A.5.15','NIST 800-53 AC-2','SOC2 CC6.1'],
+        evid:['Security operations procedures','Incident management records','Security metrics dashboard']}
+     ]}
+   ]},
+  {id:'mitre',name:'MITRE ATT&CK',icon:'⚔️',cat:'security',
+   desc:'Adversary tactics, techniques and sub-techniques — threat modelling, detection, and red team mapping',
+   controls:196,
+   doms:[
+     {n:'TA0001-3',t:'Initial Access & Execution',ctrls:[
+       {id:'T1566',name:'Phishing (TA0001)',
+        desc:'Adversaries send malicious content via email (T1566.001 spearphishing attachment, T1566.002 link) to gain initial access. Most common initial access vector.',
+        maps:['ISO 27001 A.6.3','NIST 800-53 AT-2','CIS Control 14','NIS2 Art.21(2)(g)'],
+        evid:['Anti-phishing gateway configuration','Phishing simulation results (quarterly)','User reported phishing rate','Email security DMARC/DKIM/SPF configuration']},
+       {id:'T1190',name:'Exploit public-facing application (TA0001)',
+        desc:'Adversaries exploit vulnerabilities in internet-facing systems to gain access. Targets include web servers, VPNs, mail servers.',
+        maps:['ISO 27001 A.8.8','NIST 800-53 RA-5','CIS Control 7','PCI DSS 11.3'],
+        evid:['External vulnerability scan results (monthly)','WAF configuration and rule updates','Patch SLA compliance for internet-facing systems','External penetration test results']}
+     ]},
+     {n:'TA0004-6',t:'Privilege Escalation & Defence Evasion',ctrls:[
+       {id:'T1548',name:'Abuse elevation control mechanism (TA0004)',
+        desc:'Adversaries abuse permission mechanisms to elevate privileges — sudo abuse, UAC bypass, SUID/GUID misuse.',
+        maps:['ISO 27001 A.8.2','NIST 800-53 AC-6','CIS Control 5'],
+        evid:['Privileged command auditing (sudo logs)','Endpoint detection rules for privilege escalation patterns','Regular privilege review results']},
+       {id:'T1562',name:'Impair defences (TA0005)',
+        desc:'Adversaries attempt to disable security tools — stopping AV services, disabling logging, clearing event logs.',
+        maps:['ISO 27001 A.8.15','NIST 800-53 AU-9','CIS Control 8'],
+        evid:['Security tool tamper protection enabled','Alert on security service stoppage','Log integrity controls (SIEM with forwarding)']}
+     ]},
+     {n:'TA0009-11',t:'Collection & Exfiltration',ctrls:[
+       {id:'T1041',name:'Exfiltration over C2 channel (TA0010)',
+        desc:'Adversaries exfiltrate data over existing command and control channel rather than alternative methods.',
+        maps:['ISO 27001 A.8.12','NIST 800-53 SC-7','CIS Control 13'],
+        evid:['DLP policy configuration','Outbound traffic inspection and anomaly detection','C2 network indicator blocklists in firewall/DNS']},
+       {id:'T1486',name:'Data encrypted for impact (TA0040)',
+        desc:'Ransomware — adversaries encrypt data on target systems to interrupt availability and extort ransom.',
+        maps:['ISO 27001 A.5.30','NIST 800-53 CP-9','ISO 22301'],
+        evid:['Immutable backup configuration (3-2-1 rule)','Ransomware incident response playbook','Annual restore test from backup','Network segmentation preventing lateral movement']}
+     ]}
+   ]},
+  {id:'owasp',name:'OWASP Top 10 + LLM',icon:'🕷️',cat:'security',
+   desc:'Web application and AI/LLM security vulnerabilities — practical developer and AppSec guidance',
+   controls:20,
+   doms:[
+     {n:'A01-A05',t:'OWASP Web Top 10 (2021)',ctrls:[
+       {id:'A01',name:'Broken access control',
+        desc:'Access control enforces policy such that users cannot act outside of their intended permissions. Failures lead to unauthorised disclosure, modification, or destruction of data. Moved to #1 in 2021.',
+        maps:['ISO 27001 A.5.15','NIST 800-53 AC-3','PCI DSS 7','NIST CSF PR.AA'],
+        evid:['Penetration test results testing access control bypasses','Code review checklist covering authorisation logic','RBAC model documentation']},
+       {id:'A03',name:'Injection',
+        desc:'SQL, NoSQL, OS, and LDAP injection attacks occur when untrusted data is sent as part of a command or query. Prevention requires parameterised queries and input validation.',
+        maps:['ISO 27001 A.8.28','NIST 800-53 SI-10','PCI DSS 6.3'],
+        evid:['SAST results showing no high-severity injection findings','Parameterised query enforcement in code standards','DAST results for injection vulnerabilities']}
+     ]},
+     {n:'LLM01-05',t:'OWASP LLM Top 10 (2025)',ctrls:[
+       {id:'LLM01',name:'Prompt injection',
+        desc:'Malicious inputs manipulate the LLM to ignore instructions, execute unintended actions, or exfiltrate data. Includes direct injection (user-supplied) and indirect injection (via external content retrieved by the LLM).',
+        maps:['NIST AI RMF MEASURE','ISO 42001 A.6.5','EU AI Act Art.9'],
+        evid:['Prompt injection test results','Input sanitisation and output filtering configuration','System prompt protection measures']},
+       {id:'LLM06',name:'Excessive agency',
+        desc:'LLM-based systems given too much capability, permissions, or autonomy can take unintended impactful actions. Applies to agentic AI systems with tool use.',
+        maps:['ISO 42001 A.5.2','NIST AI RMF GOVERN','EU AI Act Art.14'],
+        evid:['AI system capability inventory with justification','Human oversight checkpoints defined','Permission scope reviews for AI agents']}
+     ]}
+   ]},
+  {id:'c5',name:'BSI C5:2020',icon:'☁️',cat:'cloud',
+   desc:'German cloud security attestation catalogue — 121 controls, 17 domains, Type 1/2 attestation',
+   controls:121,
+   doms:[
+     {n:'OIS/AM/HRS',t:'Organisation, Assets & HR',ctrls:[
+       {id:'OIS-01',name:'Information security management system',
+        desc:'The cloud service provider must operate an ISMS covering the cloud service scope. ISO 27001 certification is explicitly accepted as evidence for most OIS controls.',
+        maps:['ISO 27001 Clause 4-10','NIS2 Art.21(2)(a)','NIST CSF GV.OC'],
+        evid:['ISO 27001 certificate covering cloud service scope','ISMS policy and scope documentation','Management review records']},
+       {id:'AM-05',name:'Information classification',
+        desc:'The cloud provider must have a documented classification scheme and apply it to all customer data handled. Classification drives handling, protection, and retention requirements.',
+        maps:['ISO 27001 A.5.12','NIST 800-53 RA-2','GDPR Art.25'],
+        evid:['Data classification policy with defined tiers','Classification scheme applied to customer data types','Handling procedure per classification level']}
+     ]},
+     {n:'IAM/CRY',t:'Identity, Access & Cryptography',ctrls:[
+       {id:'IAM-01',name:'Access control policy',
+        desc:'Access to systems, applications, and data must be controlled based on need-to-know and least privilege. Privileged access requires additional controls.',
+        maps:['ISO 27001 A.5.15','NIST 800-53 AC-1','PCI DSS 7'],
+        evid:['Access control policy','Role-based access model for cloud systems','Quarterly access review records']},
+       {id:'CRY-01',name:'Cryptographic key management lifecycle',
+        desc:'Keys must be managed through their full lifecycle: generation, distribution, storage, rotation, revocation, and destruction. Key management procedures must be documented and followed.',
+        maps:['ISO 27001 A.8.24','NIST 800-53 SC-12','PCI DSS 3.7'],
+        evid:['Key management policy covering full lifecycle','Key rotation schedule and evidence of execution','HSM or equivalent key storage evidence']}
+     ]},
+     {n:'SSO/TPC',t:'Sub-processors & Customer Transparency',ctrls:[
+       {id:'SSO-01',name:'Sub-processor register',
+        desc:'A current list of sub-processors must be maintained and made available to customers. Changes must be communicated to customers with adequate notice (typically 30 days).',
+        maps:['GDPR Art.28','DORA Art.28','NIS2 Art.21(2)(d)'],
+        evid:['Published sub-processor list with countries','Customer notification records for sub-processor changes','Sub-processor contractual security requirements']},
+       {id:'TPC-01',name:'C5 attestation sharing',
+        desc:'The cloud provider must make the current C5 attestation report available to customers (under NDA). The Annex must contain standardised environment parameters.',
+        maps:['DORA Art.30','GDPR Art.28','NIS2 Art.21(2)(d)'],
+        evid:['C5 Type 2 attestation report (current period)','NDA template for report sharing','Environment and context parameters Annex completed']}
+     ]}
+   ]},
+  {id:'csaccm',name:'CSA CCM v4',icon:'🌐',cat:'cloud',
+   desc:'Cloud Controls Matrix — 197 controls, 17 domains, maps to ISO 27001, DORA, NIS2, GDPR, C5',
+   controls:197,
+   doms:[
+     {n:'IAM',t:'Identity and Access Management',ctrls:[
+       {id:'IAM-01',name:'Identity and access management policy',
+        desc:'Establish, document, approve, communicate, and implement policies and procedures for identity and access management covering provisioning, authentication, authorisation, and review.',
+        maps:['ISO 27001 A.5.15','NIST 800-53 AC-1','C5 IAM-01','PCI DSS 7'],
+        evid:['IAM policy document','Identity provider configuration','Provisioning and de-provisioning workflow']},
+       {id:'IAM-08',name:'User access lifecycle',
+        desc:'Restrict user access provisioning and de-provisioning to authorised personnel. Ensure timely removal of access on role change or departure.',
+        maps:['ISO 27001 A.6.5','NIST 800-53 AC-2','SOC2 CC6.2'],
+        evid:['Off-boarding checklist with access revocation step','Access removal SLA (e.g., 24h for leavers)','Orphaned account scan results']}
+     ]},
+     {n:'DSP/EKM',t:'Data Security & Key Management',ctrls:[
+       {id:'DSP-07',name:'Data localisation and sovereignty',
+        desc:'Identify and document where data is stored, processed, and transmitted by geography. Comply with applicable data localisation requirements.',
+        maps:['GDPR Art.46','DORA Art.30','C5 AM-05'],
+        evid:['Data residency map per cloud service','Data transfer mechanisms (SCCs, adequacy decisions)','Cloud provider data location documentation']},
+       {id:'EKM-03',name:'Encryption at rest',
+        desc:'Ensure cryptographic protection is applied to sensitive data at rest using current industry-accepted algorithms and key lengths.',
+        maps:['ISO 27001 A.8.24','NIST 800-53 SC-28','C5 CRY-01','GDPR Art.32'],
+        evid:['Encryption configuration per storage service','Key management integration (BYOK or provider-managed)','Encryption coverage report']}
+     ]},
+     {n:'SEF/LOG',t:'Security Incident & Logging',ctrls:[
+       {id:'SEF-05',name:'Incident reporting to authorities',
+        desc:'Report security incidents to competent authorities as required by applicable regulations. Maintain notification procedures aligned to regulatory timelines.',
+        maps:['NIS2 Art.23','DORA Art.19','GDPR Art.33'],
+        evid:['Regulatory notification procedure covering all applicable regimes','Incident classification criteria for reportable incidents','Notification log with timestamps']},
+       {id:'LOG-01',name:'Logging policy and monitoring',
+        desc:'Define and implement a logging policy covering what is logged, retention periods, protection, and monitoring. Security logs must be reviewed.',
+        maps:['ISO 27001 A.8.15','NIST 800-53 AU-2','PCI DSS 10','C5 OPS-12'],
+        evid:['Logging policy with retention (12 months min)','Log aggregation coverage report','Automated alert rules and review evidence']}
+     ]}
+   ]}
+];
+const CAT_COLORS = {
+  security:{bg:'#E6F1FB',tx:'#0C447C',label:'Security'},
+  privacy:{bg:'#EAF3DE',tx:'#27500A',label:'Privacy'},
+  risk:{bg:'#FAEEDA',tx:'#633806',label:'Risk'},
+  ai:{bg:'#EEEDFE',tx:'#3C3489',label:'AI'},
+  resilience:{bg:'#E1F5EE',tx:'#085041',label:'Resilience'},
+  cloud:{bg:'#E6F1FB',tx:'#0C447C',label:'Cloud'}
+};
+
+let bookmarks = JSON.parse(localStorage.getItem('grc_bm')||'[]');
+let activeCat = 'all';
+let expanded = {};
+
+function saveBM(){localStorage.setItem('grc_bm',JSON.stringify(bookmarks));updateBMCount();}
+function updateBMCount(){
+  const c = bookmarks.length;
+  document.getElementById('bm-count').textContent = c?`(${c})`:'';
+}
+function toggleBM(id){
+  if(bookmarks.includes(id)){bookmarks=bookmarks.filter(x=>x!==id);}
+  else{bookmarks.push(id);}
+  saveBM();renderRef();renderBM();
+}
+
+function setMode(m){
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${m}`));
+  if(m==='bm')renderBM();
+}
+function setCat(c){
+  activeCat=c;
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.toggle('active',p.dataset.cat===c));
+  renderRef();
+}
+function filterRef(){renderRef();}
+
+function renderRef(){
+  const q=(document.getElementById('ref-search').value||'').toLowerCase();
+  const list=document.getElementById('fw-list');
+  let html='';let shown=0;
+  FW.forEach(fw=>{
+    if(activeCat!=='all'&&fw.cat!==activeCat)return;
+    if(q&&!fw.name.toLowerCase().includes(q)&&!fw.desc.toLowerCase().includes(q)&&
+       !fw.doms.some(d=>d.t.toLowerCase().includes(q)||
+         d.ctrls.some(ctrl=>ctrl.name.toLowerCase().includes(q)||ctrl.id.toLowerCase().includes(q)||
+           (ctrl.desc&&ctrl.desc.toLowerCase().includes(q)))))return;
+    shown++;
+    const cc=CAT_COLORS[fw.cat]||{bg:'#f3f4f6',tx:'#374151'};
+    const bmed=bookmarks.includes(fw.id);
+    const isExp=!!expanded[fw.id];
+    html+=`<div class="fw-card" id="fwc-${fw.id}">
+      <div class="fw-head" onclick="toggleFW('${fw.id}')">
+        <div class="fw-icon" style="background:${cc.bg}">${fw.icon}</div>
+        <div class="fw-meta">
+          <div class="fw-name">${fw.name}</div>
+          <div class="fw-desc">${fw.desc}</div>
+        </div>
+        <div class="fw-right">
+          <span class="cat-badge" style="background:${cc.bg};color:${cc.tx}">${cc.label}</span>
+          <span class="fw-count">${fw.controls} controls</span>
+          <span class="fw-chevron${isExp?' open':''}" id="fwchev-${fw.id}">▼</span>
+        </div>
+      </div>
+      <div class="fw-body${isExp?' open':''}" id="fwd-${fw.id}">
+        ${fw.doms.map((d,di)=>{
+          const domId=fw.id+'-dom-'+di;
+          return `<div class="dom-item">
+            <div class="dom-head" onclick="toggleDom('${domId}')">
+              <span class="dom-num">${d.n}</span>
+              <span class="dom-title">${d.t}</span>
+              <span class="dom-count">${d.ctrls.length}</span>
+              <span class="dom-arr" id="darr-${domId}">▼</span>
+            </div>
+            <div class="dom-body" id="dbody-${domId}">
+              ${d.ctrls.map((ctrl,ci)=>{
+                const ctrlId=domId+'-ctrl-'+ci;
+                return `<div class="ctrl-row" onclick="toggleCtrl('${ctrlId}')">
+                  <div class="ctrl-top">
+                    <span class="ctrl-id">${ctrl.id}</span>
+                    <span class="ctrl-name">${ctrl.name}</span>
+                    <span class="ctrl-arr" id="carr-${ctrlId}">▼</span>
+                  </div>
+                  <div class="ctrl-detail" id="cdet-${ctrlId}">
+                    <div class="ctrl-desc">${ctrl.desc}</div>
+                    <div class="ctrl-maps">${(ctrl.maps||[]).map(m=>`<span class="map-badge">${m}</span>`).join('')}</div>
+                    <div class="ctrl-evid-lbl">Evidence</div>
+                    <div class="ctrl-evid-list">${(ctrl.evid||[]).map(e=>`<div class="ctrl-evid-item">${e}</div>`).join('')}</div>
+                  </div>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>`;
+        }).join('')}
+        <div class="fw-bm-row">
+          <button class="bm-btn ${bmed?'active':''}" onclick="event.stopPropagation();toggleBM('${fw.id}')" title="${bmed?'Remove bookmark':'Bookmark this framework'}">
+            ${bmed?'⭐':'☆'} ${bmed?'Bookmarked':'Bookmark'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+  });
+  if(!shown)html='<div class="no-results">🔍 No frameworks match your search</div>';
+  list.innerHTML=html;
+}
+
+function toggleFW(id){
+  expanded[id]=!expanded[id];
+  const d=document.getElementById('fwd-'+id);
+  const chev=document.getElementById('fwchev-'+id);
+  if(d)d.classList.toggle('open',expanded[id]);
+  if(chev)chev.classList.toggle('open',expanded[id]);
+}
+function toggleDom(domId){
+  const b=document.getElementById('dbody-'+domId);
+  const a=document.getElementById('darr-'+domId);
+  if(!b)return;
+  const open=b.classList.toggle('open');
+  if(a)a.classList.toggle('open',open);
+}
+function toggleCtrl(ctrlId){
+  const d=document.getElementById('cdet-'+ctrlId);
+  const a=document.getElementById('carr-'+ctrlId);
+  if(!d)return;
+  const open=d.classList.toggle('open');
+  if(a)a.classList.toggle('open',open);
+}
+
+// ===== STUDY HUB DATA =====
+const BOOKS = [
+  {key:'nistai',name:'NIST AI RMF 1.0',icon:'🎯',color:'#534AB7',
+   tagline:'AI risk mgmt — Govern, Map, Measure, Manage',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','Policy draft','Resources'],
+   concepts:[
+     {t:'GOVERN',b:'Establishes the culture, policies and accountability structures for AI risk. Board-level ownership. Includes AI policy, risk appetite statement, roles, and supply chain requirements.'},
+     {t:'MAP',b:'Identifies and classifies AI risks in context. Requires stakeholder analysis, intended use documentation, scientific validity assessment, and impact categorisation before deployment.'},
+     {t:'MEASURE',b:'Quantifies and analyses AI risks. Covers bias testing, robustness, explainability, and trustworthy AI attribute scoring. Metrics defined per use-case, not one-size-fits-all.'},
+     {t:'MANAGE',b:'Treats, monitors and communicates residual AI risk. Risk response plans, treatment decisions (accept/mitigate/transfer/avoid), and ongoing post-deployment monitoring.'}
+   ],
+   raci:[
+     {p:'AI Risk Policy',r:'CISO',a:'Board/CEO',c:'Legal',i:'All staff'},
+     {p:'AI System Inventory',r:'AI/ML Team',a:'CISO',c:'Business owners',i:'Procurement'},
+     {p:'Impact Assessment',r:'Ethics/Privacy',a:'CISO',c:'Legal, Product',i:'Regulators'},
+     {p:'Bias & Robustness Testing',r:'AI/ML Team',a:'CISO',c:'QA, Legal',i:'Audit'},
+     {p:'Incident Response',r:'SecOps',a:'CISO',c:'Legal, PR',i:'Board'}
+   ],
+   processes:[
+     {t:'AI system onboarding',d:'New AI system request → classification (minimal/limited/high/unacceptable) → MAP risk profile → MEASURE baseline → GOVERN approval → deployment with monitoring plan.'},
+     {t:'Quarterly AI risk review',d:'MEASURE metrics gathered → anomaly analysis → risk register updated → treatment plans adjusted → GOVERN sign-off → board reporting.'},
+     {t:'AI incident response',d:'Detection → classification (AI-related?) → MANAGE response plan activated → containment → root cause analysis → post-incident MEASURE recalibration.'}
+   ],
+   ncrs:[
+     {h:'Major NCR — No AI system inventory',b:'Organisation cannot demonstrate a complete inventory of AI systems in production. MAP function cannot be performed without knowing which systems exist. Requires documented inventory within 30 days.'},
+     {h:'Minor NCR — Incomplete impact assessment',b:'Three high-risk AI systems lack documented impact assessments covering affected stakeholders. MAP-1.5 requires documented stakeholder analysis before deployment.'}
+   ],
+   evidence:['AI system inventory register (MAP-2.1)','AI risk classification records (MAP-2.2)','Impact assessment reports per system (MAP-3.5)','Bias testing results and thresholds (MS-2.3)','AI policy approved by board (GV-1.1)','Training records for AI teams (GV-4.1)','Incident log for AI-related events (MG-3.1)'],
+   lifecycle:['Scoping: Define AI system boundaries and intended use','MAP: Identify stakeholders, context, and risk categories','MEASURE: Run bias, robustness, and explainability assessments','GOVERN: Board approval and policy alignment','Deploy: Activate with monitoring and feedback loops','MANAGE: Ongoing risk tracking, treatment, and escalation'],
+   policy:`<div class="pol-section"><div class="pol-num">§1 Scope</div><div class="pol-heading">Purpose and Applicability</div><div class="pol-body">This policy governs all AI systems developed, procured, or deployed by the organisation. It applies to all staff, contractors, and third parties involved in AI lifecycle activities.</div><div class="pol-annotation">Auditor check: Scope statement must explicitly name high-risk AI categories. Vague scope = immediate gap finding.</div></div>
+<div class="pol-section"><div class="pol-num">§3 MAP Function</div><div class="pol-heading">AI System Classification</div><div class="pol-body">All AI systems must be classified as: Minimal, Limited, High, or Unacceptable risk. Classification must be documented before production deployment, reviewed annually, and updated on material change.</div><div class="pol-annotation">Auditor check: Look for classification records in the AI register. Request evidence for two systems — confirm classification logic is documented.</div></div>
+<div class="pol-section"><div class="pol-num">§5 MANAGE Function</div><div class="pol-heading">Risk Treatment and Monitoring</div><div class="pol-body">Risk treatment decisions (accept/mitigate/transfer/avoid) must be documented with residual risk scores. All high-risk AI systems require quarterly MEASURE reviews. Monitoring dashboards must alert on drift thresholds defined at deployment.</div><div class="pol-annotation">Auditor check: Request monitoring evidence for one high-risk system. Absence of drift alerts or thresholds = process breakdown finding.</div></div>`,
+   resources:[
+     {n:'NIST AI RMF 1.0 (official PDF)',u:'https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.100-1.pdf'},
+     {n:'NIST AI RMF Playbook',u:'https://airc.nist.gov/Docs/2'},
+     {n:'NIST AI Risk Management Framework Overview',u:'https://www.nist.gov/system/files/documents/2023/01/26/AI%20RMF%20Fact%20Sheet.pdf'}
+   ]
+  },
+  {key:'euaiact',name:'EU AI Act',icon:'⚖️',color:'#185FA5',
+   tagline:'Risk-tiered regulation — prohibited, high-risk, GPAI obligations',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','Policy draft','Resources'],
+   concepts:[
+     {t:'Four-tier risk system',b:'Unacceptable risk (banned), High-risk (Annex III obligations), Limited risk (transparency only), Minimal risk (self-governance). Classification drives the entire compliance burden.'},
+     {t:'High-risk obligations (Art.9-15)',b:'Risk management system, data governance, technical documentation, automatic logging, transparency to users, human oversight, and accuracy/robustness requirements — all mandatory before market placement.'},
+     {t:'Provider vs Deployer split',b:'Providers (build/distribute) carry most obligations. Deployers (use in professional context) carry monitoring, human oversight, and FRIA duties. Both can face sanctions.'},
+     {t:'GPAI models (Art.51-55)',b:'General-purpose AI models (like LLMs) face documentation, copyright policy, and training data transparency requirements. Systemic-risk models require adversarial testing and incident reporting.'}
+   ],
+   raci:[
+     {p:'AI System Risk Classification',r:'Product/Legal',a:'DPO/CCO',c:'Technical team',i:'Management'},
+     {p:'Technical Documentation',r:'Engineering',a:'Product Owner',c:'Legal',i:'Regulator'},
+     {p:'Conformity Assessment',r:'QA/Compliance',a:'CCO',c:'External auditor',i:'Board'},
+     {p:'Post-market Monitoring',r:'Operations',a:'Product Owner',c:'Legal, QA',i:'AI Office'},
+     {p:'Serious Incident Reporting',r:'Operations',a:'CCO',c:'Legal',i:'Regulators'}
+   ],
+   processes:[
+     {t:'High-risk AI system conformity',d:'Identify Annex III category → risk mgmt system setup → data governance review → technical file preparation → conformity assessment (self or third-party) → CE marking → register in EU database → post-market monitoring activation.'},
+     {t:'FRIA (public bodies)',d:'Fundamental Rights Impact Assessment → identify affected groups → assess impact on protected characteristics → document safeguards → management approval → update annually or on material change.'},
+     {t:'Serious incident reporting',d:'Incident detected → classify (serious harm to health, safety, fundamental rights?) → notify market surveillance authority → 15-day initial report → follow-up on root cause → corrective action plan.'}
+   ],
+   ncrs:[
+     {h:'Critical — No risk management system (Art.9)',b:'High-risk AI system deployed without documented risk management system. Art.9 requires continuous risk management throughout the lifecycle. Immediate suspension risk.'},
+     {h:'Major — Missing technical documentation (Art.11)',b:'Technical documentation file does not contain training data description or validation methodology as required by Annex IV. Conformity assessment cannot proceed without this.'}
+   ],
+   evidence:['AI system register with risk classification','Technical documentation file (Annex IV checklist)','Conformity assessment report or self-declaration','Data governance records (training data sources, quality)','Human oversight procedures and logs','Post-market monitoring plan and reports','FRIA documentation (for public sector deployers)'],
+   lifecycle:['Scope: Determine provider vs deployer role','Classify: Assess against Annex III and prohibited list','Design: Build in risk mgmt, data governance, oversight from day 1','Document: Technical file, logs, transparency materials','Assess: Conformity assessment (self or notified body)','Deploy: CE mark, EU database registration, monitor'],
+   policy:`<div class="pol-section"><div class="pol-num">§1 Scope</div><div class="pol-heading">Applicability and Role Definition</div><div class="pol-body">This policy applies to all AI systems placed on the EU market. The organisation acts as [Provider/Deployer — specify]. Prohibited practices under Art.5 are absolutely banned and may not be authorised by any manager.</div><div class="pol-annotation">Auditor check: Verify the role distinction is accurate and that Annex III screening has been conducted for all systems. Missing role definition = scoping gap.</div></div>
+<div class="pol-section"><div class="pol-num">§3 High-Risk Obligations</div><div class="pol-heading">Art.9-15 Requirements</div><div class="pol-body">All Annex III systems must have: (a) documented risk management system, (b) data governance policy, (c) technical documentation file, (d) automatic event logging, (e) transparency to users, (f) human oversight procedure, (g) accuracy benchmarks.</div><div class="pol-annotation">Auditor check: Request evidence for each of the seven requirements for one high-risk system. Missing any one = major NCR.</div></div>`,
+   resources:[
+     {n:'EU AI Act — Official Journal',u:'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689'},
+     {n:'EU AI Act Compliance Checker',u:'https://artificialintelligenceact.eu/assessment/eu-ai-act-compliance-checker/'},
+     {n:'European AI Office',u:'https://digital-strategy.ec.europa.eu/en/policies/european-ai-office'}
+   ]
+  },
+  {key:'gdpr',name:'GDPR',icon:'🔏',color:'#0F6E56',
+   tagline:'EU data protection — 8 principles, 8 rights, DPIA and breach obligations',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','DPIA template','DPO report','Resources'],
+   concepts:[
+     {t:'Seven Art.5 principles',b:'Lawfulness / fairness / transparency — Purpose limitation — Data minimisation — Accuracy — Storage limitation — Integrity & confidentiality — Accountability. Accountability sits with the controller and must be demonstrable.'},
+     {t:'Lawful basis (Art.6)',b:'One of six bases must apply: consent, contract, legal obligation, vital interests, public task, or legitimate interests (LIA required). Special category data (Art.9) needs an additional condition.'},
+     {t:'Data subject rights',b:'Eight rights: access (1 month), rectification (1 month), erasure (1 month), restriction, portability, objection, not subject to automated decision-making. Rights must be actionable — not just written in a privacy notice.'},
+     {t:'DPIA and prior consultation',b:'Art.35 requires DPIA when processing is "likely to result in high risk." Three types always require DPIA: systematic profiling, large-scale special categories, systematic public monitoring. If DPIA shows high residual risk → prior consultation with supervisory authority.'}
+   ],
+   raci:[
+     {p:'Privacy Notice / Policy',r:'DPO',a:'Controller (CEO)',c:'Legal, Marketing',i:'All staff'},
+     {p:'ROPA Maintenance',r:'DPO',a:'Controller',c:'Department heads',i:'Audit'},
+     {p:'DPIA',r:'DPO',a:'Controller',c:'IT, Legal, Business',i:'Supervisory Authority'},
+     {p:'Breach Notification (72h)',r:'CISO/SecOps',a:'DPO',c:'Legal',i:'Supervisory Authority'},
+     {p:'DSR Handling',r:'DPO',a:'Controller',c:'IT, HR, Legal',i:'Data subject'}
+   ],
+   processes:[
+     {t:'Data Subject Request (DSR) handling',d:'Request received → identity verification → scope clarification → 1-month clock starts → data gathered from all systems → response drafted → legal review → sent to subject → logged in DSR register.'},
+     {t:'72-hour breach notification',d:'Breach detected → CISO notified → severity assessed → DPO informed (within hours) → supervisory authority notified if risk to individuals → 72h clock runs from controller awareness → data subjects notified if high risk.'},
+     {t:'DPIA process',d:'Processing activity identified → screening (is DPIA required?) → DPIA scoping → consult DPO → risk assessment → identify safeguards → residual risk level → prior consultation if still high → document and approve.'}
+   ],
+   ncrs:[
+     {h:'Critical — No ROPA (Art.30)',b:'Organisation processing personal data without a Record of Processing Activities. Art.30 is mandatory for most organisations. Without ROPA, accountability principle cannot be demonstrated.'},
+     {h:'Major — 72-hour notification missed',b:'Data breach affecting 5,000 customers reported to supervisory authority 9 days after discovery. Art.33 requires notification within 72 hours of controller awareness — late notification is a standalone infringement.'}
+   ],
+   evidence:['Record of Processing Activities (ROPA) — Art.30','Data Protection Impact Assessments — Art.35','DPO appointment record and contact details','Breach notification log (even for non-reportable incidents)','DSR handling log with response dates','Consent records with timestamp and mechanism','Privacy notices version history','Processor agreements — Art.28 DPAs'],
+   lifecycle:['Map: Data flows, purposes, retention periods, third parties','Assess: DPIA screening for each processing activity','Design: Privacy by design — minimise data, encrypt, access control','Document: ROPA, DPAs, consent records, privacy notices','Operate: DSR process, breach procedures, DPO oversight','Review: Annual ROPA review, DPIA refresh on material change'],
+   dpia:`<div class="pol-section"><div class="pol-num">Part A</div><div class="pol-heading">Processing Description</div><div class="pol-body">System: [Name]. Controller: [Org]. DPO consulted: [Date]. Purpose: [describe]. Categories of data: [list]. Number of data subjects: [estimate]. Retention: [period]. Recipients: [list processors and third countries].</div><div class="pol-annotation">Auditor check: Verify this matches the ROPA entry. Discrepancies indicate ROPA is not kept current.</div></div>
+<div class="pol-section"><div class="pol-num">Part B</div><div class="pol-heading">Necessity and Proportionality</div><div class="pol-body">Lawful basis: [specify Art.6 basis and, if applicable, Art.9 condition]. Is the processing necessary for the stated purpose? [Yes/No with rationale]. Could the purpose be achieved with less data? [analysis]. Data minimisation measures implemented: [list].</div><div class="pol-annotation">Auditor check: Lawful basis must be identified in ROPA and consistent with privacy notice. Mismatch = transparency principle violation.</div></div>
+<div class="pol-section"><div class="pol-num">Part C</div><div class="pol-heading">Risk Assessment</div><div class="pol-body"><table class="raci-table"><tr><th>Risk</th><th>Likelihood</th><th>Severity</th><th>Safeguard</th><th>Residual</th></tr><tr><td>Unauthorised access to personal data</td><td>Medium</td><td>High</td><td>RBAC, encryption at rest</td><td>Low</td></tr><tr><td>Data subject rights not fulfilled</td><td>Low</td><td>Medium</td><td>DSR workflow, 1-month SLA</td><td>Low</td></tr><tr><td>Cross-border transfer without safeguard</td><td>Medium</td><td>High</td><td>SCCs in place</td><td>Low</td></tr></table></div></div>
+<div class="pol-section"><div class="pol-num">Part D</div><div class="pol-heading">DPO Recommendation</div><div class="pol-body">DPO recommendation: [Approve / Approve with conditions / Prior consultation required]. Conditions: [list if any]. Prior consultation required: [Yes/No]. DPO signature: __________ Date: __________</div><div class="pol-annotation">Auditor check: DPO recommendation must be documented even if controller overrides it. Override without DPO opinion = accountability gap.</div></div>`,
+   dporeport:`<div class="pol-section"><div class="pol-num">§1</div><div class="pol-heading">DPO Annual Report — [Year]</div><div class="pol-body">Prepared by: [DPO Name] | Reporting period: [dates] | Submitted to: Board/Management</div></div>
+<div class="pol-section"><div class="pol-num">§2</div><div class="pol-heading">Key Performance Metrics</div><div class="pol-body"><table class="raci-table"><tr><th>Metric</th><th>Target</th><th>Actual</th><th>Status</th></tr><tr><td>DSRs responded within 1 month</td><td>100%</td><td>96%</td><td>⚠️ 4 late</td></tr><tr><td>DPIA completions</td><td>All new high-risk</td><td>8/9</td><td>⚠️ 1 pending</td></tr><tr><td>Breach notifications filed (72h)</td><td>100%</td><td>100%</td><td>✅</td></tr><tr><td>Staff training completion</td><td>90%</td><td>87%</td><td>⚠️ 3% gap</td></tr></table></div></div>
+<div class="pol-section"><div class="pol-num">§3</div><div class="pol-heading">Breach Register Summary</div><div class="pol-body">Total incidents: [N]. Notified to supervisory authority: [N]. Data subjects notified: [N]. Root causes: [summarise]. Corrective actions: [summarise].</div><div class="pol-annotation">Auditor check: Every notifiable breach must appear in the register with notification date. Gaps indicate process failure not data minimisation.</div></div>
+<div class="pol-section"><div class="pol-num">§4</div><div class="pol-heading">Management Recommendations</div><div class="pol-body">1. [Key recommendation — e.g., ROPA update required for 3 new processing activities]. 2. [Processor due diligence programme — 5 Art.28 DPAs expired]. 3. [DSR workflow automation — current manual process causing latency]. Priority: [High/Medium/Low for each].</div></div>`,
+   resources:[
+     {n:'GDPR Official Text',u:'https://eur-lex.europa.eu/eli/reg/2016/679/oj'},
+     {n:'EDPB Guidelines and Recommendations',u:'https://www.edpb.europa.eu/our-work-tools/general-guidance/guidelines-recommendations-best-practices_en'},
+     {n:'ICO Accountability Framework',u:'https://ico.org.uk/for-organisations/accountability-framework/'}
+   ]
+  },
+  {key:'dora',name:'DORA',icon:'🏦',color:'#185FA5',
+   tagline:'Financial sector ICT resilience — 5 pillars, incident reporting timelines',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','Incident template','Resources'],
+   concepts:[
+     {t:'Pillar 1 — ICT Risk Management (Ch.II)',b:'Mandatory ICT risk management framework with board responsibility (Art.5.1). Must include protection, detection, response, recovery, and backup capabilities. Documented and tested annually.'},
+     {t:'Pillar 2 — Incident Reporting (Ch.III)',b:'Three-step reporting: Early warning within 4 hours of awareness, intermediate notification within 72 hours, final report within 1 month. Clock starts from "awareness" — not discovery of full extent.'},
+     {t:'Pillar 3 — Resilience Testing (Ch.IV)',b:'All in-scope entities do basic testing annually (vulnerability scans, scenario-based testing). Significant entities additionally perform TLPT (Threat-Led Penetration Testing) every 3 years using TIBER-EU methodology.'},
+     {t:'Pillar 4 — Third-Party Risk (Ch.V)',b:'ICT third-party register (Art.28) with all providers. Critical ICT providers designated by ESAs face direct oversight. Art.30 contract requirements are mandatory — include exit strategy, audit rights, SLAs.'}
+   ],
+   raci:[
+     {p:'ICT Risk Framework',r:'CTO/CISO',a:'Board',c:'Risk Committee',i:'All staff'},
+     {p:'ICT Incident Classification',r:'SecOps',a:'CISO',c:'Legal, Compliance',i:'Regulators'},
+     {p:'TLPT Coordination',r:'Red Team/CISO',a:'CTO',c:'External testers',i:'Regulators'},
+     {p:'ICT Third-Party Register',r:'Vendor Mgmt',a:'CTO',c:'Legal, Procurement',i:'Board'},
+     {p:'ICT Incident Report (regulator)',r:'Compliance',a:'CCO',c:'Legal, CISO',i:'Competent Authority'}
+   ],
+   processes:[
+     {t:'ICT incident reporting workflow',d:'Incident detected → classify (major?) → Early warning to regulator (4h) → investigation → Intermediate report (72h) → root cause analysis → Final report (1 month) → lessons learned → ICT risk register updated.'},
+     {t:'Third-party onboarding',d:'Vendor identified → ICT criticality assessment → Art.30 contract clauses checked → register entry created → risk assessment completed → ongoing monitoring plan activated → annual review scheduled.'},
+     {t:'TLPT execution (every 3 years)',d:'Scope definition → regulator notification → threat intelligence phase → red team testing → findings documented → debrief with regulator → remediation plan → attestation issued.'}
+   ],
+   ncrs:[
+     {h:'Critical — No ICT third-party register',b:'Organisation cannot produce the ICT third-party register required by Art.28. Competent authority can require production immediately. Absence indicates fundamental governance gap in third-party risk management.'},
+     {h:'Major — Incident reporting delay',b:'Major ICT incident reported to competent authority 6 days after awareness. Art.23 requires early warning within 4 hours and intermediate report within 72 hours. Late reporting is a standalone infringement with fine exposure.'}
+   ],
+   evidence:['ICT risk management framework document','ICT third-party register (Art.28) — all providers','Major ICT incident classification criteria','Incident notification records with timestamps','TLPT report or basic testing results','Business continuity plan with RTO/RPO','ICT-related contracts with Art.30 clauses','Board ICT risk reporting — quarterly minimum'],
+   lifecycle:['Scope: Confirm in-scope entity type (credit institution, investment firm, etc.)','Assess: ICT risk assessment against DORA requirements','Gap: Identify missing framework elements','Build: ICT risk framework, incident procedures, third-party register','Test: Basic resilience testing (Year 1); TLPT planning','Operate: Monitoring, reporting, annual review'],
+   incident:`<div class="pol-section"><div class="pol-num">Part A — Identification</div><div class="pol-heading">Incident Details</div><div class="pol-body">Reference: [INC-YYYY-NNN] | Classification: [Major / Non-major] | Date/time of awareness: [DD/MM/YYYY HH:MM] | Date/time of occurrence: [DD/MM/YYYY HH:MM] | Systems affected: [list] | Initial severity: [Critical/High/Medium]</div><div class="pol-annotation">Auditor check: "Awareness" date is the clock start for Art.23 timelines. This date must be clearly established and documented within the first hour of assessment.</div></div>
+<div class="pol-section"><div class="pol-num">Part B — Description</div><div class="pol-heading">Incident Narrative</div><div class="pol-body">Description: [What happened]. Root cause (preliminary): [initial hypothesis]. Services impacted: [list]. Client impact: [Yes/No — if yes, quantify]. Duration of disruption: [HH:MM]. Geographic scope: [countries/regions].</div></div>
+<div class="pol-section"><div class="pol-num">Part C — Initial Response</div><div class="pol-heading">Actions Taken</div><div class="pol-body">Containment measures: [list]. Notification chain: [internal parties notified with times]. Regulator notified: [Yes/No] at [time] via [channel]. Clients notified: [Yes/No]. PR/comms activated: [Yes/No]. Estimated recovery time: [estimate].</div><div class="pol-annotation">Auditor check: Early warning to competent authority must occur within 4 hours of awareness. Document the exact submission time. Any gap = Art.23 violation.</div></div>
+<div class="pol-section"><div class="pol-num">Part D — Follow-up Schedule</div><div class="pol-heading">Reporting Obligations</div><div class="pol-body">Intermediate report due: [T+72h = date/time] | Final report due: [T+1 month = date] | Lessons learned session: [scheduled date] | ICT risk register update: [assigned to / by date] | Board briefing: [next board meeting].</div></div>`,
+   resources:[
+     {n:'DORA Official Text (EU 2022/2554)',u:'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022R2554'},
+     {n:'EBA DORA Technical Standards',u:'https://www.eba.europa.eu/regulation-and-policy/operational-resilience/digital-operational-resilience-act-dora'},
+     {n:'ESMA DORA Guidelines',u:'https://www.esma.europa.eu/policy-activities/digital-finance/digital-operational-resilience-act'}
+   ]
+  },
+  {key:'iso42',name:'ISO 42001:2023',icon:'🤖',color:'#993556',
+   tagline:'AI management system — builds on ISO 27001 foundation',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','Policy draft','Exam guide','Resources'],
+   concepts:[
+     {t:'Annex A new-territory controls',b:'Goes beyond ISO 27001 to cover AI-specific areas: impact assessment (A.5.4), AI system lifecycle (A.6), data quality and provenance for AI (A.7), and responsible AI principles (A.2.2). Not just information security extended.'},
+     {t:'AIMS vs ISMS relationship',b:'ISO 42001 is designed to integrate with ISO 27001. If you have an ISMS, the AIMS can reference existing controls. Shared management review, audit programme, and corrective action process — separate register for AI-specific risks.'},
+     {t:'Impact assessment (A.5.4-5)',b:'Must assess impact at three levels: individual (bias, autonomy), group (discrimination, systemic effects), and societal (democracy, environment). Proportionate to AI system risk — high-risk systems need formal AIIA, minimal-risk can use lightweight checklist.'},
+     {t:'Exam differentiators (vs 27001)',b:'ISO 42001 questions probe: lifecycle controls not in 27001 (A.6), AI-specific data requirements (A.7), the three impact levels, and the role of "intended purpose" vs "foreseeable misuse." Expect scenario questions where you must cite the Annex A clause.'}
+   ],
+   raci:[
+     {p:'AIMS Scope & Policy',r:'CISO/AI Lead',a:'Top Management',c:'Legal, Ethics',i:'All staff'},
+     {p:'AI System Register',r:'AI/ML Team',a:'CISO',c:'Business owners',i:'Procurement'},
+     {p:'AI Impact Assessment',r:'Ethics/Privacy',a:'CISO',c:'Legal, Product',i:'Affected parties'},
+     {p:'AI Lifecycle Controls',r:'Engineering',a:'AI Lead',c:'QA, Security',i:'Audit'},
+     {p:'AIMS Internal Audit',r:'Internal Audit',a:'Top Mgmt',c:'CISO',i:'Certification body'}
+   ],
+   processes:[
+     {t:'AI system impact assessment',d:'System identified → three-level impact screening (individual / group / societal) → risk level determined → full AIIA or lightweight checklist → safeguards identified → documented in AI register → management approval → review trigger set.'},
+     {t:'AI data governance',d:'Training data identified → A.7.2 data needs documented → provenance traced → quality assessment (A.7.4) → bias screening → privacy check (A.7.7) → approval before use in production model.'},
+     {t:'AIMS surveillance audit preparation',d:'Internal audit scope confirmed → AI register reviewed → evidence pack assembled (policy, AIIA records, lifecycle docs, training) → management review conducted → corrective actions closed → pre-audit readiness check.'}
+   ],
+   ncrs:[
+     {h:'Major NCR — No AI impact assessment records (A.5.4)',b:'Organisation has deployed three AI systems affecting employment decisions but cannot produce AI impact assessments. Clause 6.1.2 requires documented impact assessment before deployment of systems with significant impact potential.'},
+     {h:'Minor NCR — Training data provenance not documented (A.7.5)',b:'Two production AI models lack documented training data provenance records. A.7.5 requires organisations to understand the origin and lineage of training data used in AI systems.'}
+   ],
+   evidence:['AIMS scope statement and policy','AI system register with impact classification','AI Impact Assessment (AIIA) records — per system','Training data governance records (A.7 compliance)','AI lifecycle documentation — design, test, deploy, retire','Responsible AI principles statement with operationalisation','Internal audit report (AIMS scope)','Management review minutes with AIMS agenda items','Corrective action register'],
+   lifecycle:['Context: Map AI landscape — systems, providers, use cases','Gap: ISO 42001 gap assessment vs current ISMS','Design: AIMS scope, policy, AI register, impact process','Implement: Lifecycle controls, data governance, training','Audit: Internal audit → management review → close CARs','Certify: Stage 1 (document review) → Stage 2 (on-site) → surveillance'],
+   policy:`<div class="pol-section"><div class="pol-num">§1 Scope</div><div class="pol-heading">AIMS Applicability</div><div class="pol-body">This AIMS applies to [describe AI activities — development/deployment/procurement]. Exclusions: [list any Annex A controls excluded with justification]. The AIMS integrates with the existing ISMS (ISO 27001:2022 certified).</div><div class="pol-annotation">Auditor check: Exclusions must be justified. "We don't develop AI" is not sufficient if the organisation deploys third-party AI — deployer obligations still apply.</div></div>
+<div class="pol-section"><div class="pol-num">§3 Responsible AI Principles</div><div class="pol-heading">A.2.2 Principle Operationalisation</div><div class="pol-body"><table class="raci-table"><tr><th>Principle</th><th>Operational definition</th><th>Control reference</th></tr><tr><td>Fairness</td><td>Bias testing before deployment; monitored post-deployment</td><td>A.5.4, A.6.5</td></tr><tr><td>Transparency</td><td>Explainability score documented; users informed of AI involvement</td><td>A.6.2</td></tr><tr><td>Privacy</td><td>GDPR DPIA and AI AIIA conducted jointly for high-risk systems</td><td>A.7.7</td></tr><tr><td>Safety</td><td>Safety testing before production; incident escalation to CISO</td><td>A.6.5</td></tr></table></div><div class="pol-annotation">Auditor check: Principles must be operationalised — "we value fairness" is not a control. Expect the auditor to trace each principle to a measurable activity.</div></div>`,
+   exam:`<div class="sec-lbl">Exam domain breakdown (estimated)</div>
+<div class="concept-row"><div class="cr-title">Clause 4-6 — Context, Leadership, Planning (25%)</div><div class="cr-body">Scope definition, AI policy, risk and impact assessment process. Exam questions will ask you to apply Annex A references to scenario-based gaps.</div></div>
+<div class="concept-row"><div class="cr-title">Annex A — AIMS Controls (35%)</div><div class="cr-body">Deep knowledge of A.5 (policies), A.6 (lifecycle), A.7 (data). Expect "which clause" questions and gap identification from case studies. Know the three impact levels cold.</div></div>
+<div class="concept-row"><div class="cr-title">Clause 8-10 — Operation, Evaluation, Improvement (25%)</div><div class="cr-body">Operational planning, performance evaluation, internal audit, management review, nonconformity handling. Mirrors ISO 27001 structure — your ISMS LA knowledge applies directly.</div></div>
+<div class="concept-row"><div class="cr-title">Integration with ISO 27001 (15%)</div><div class="cr-body">How AIMS integrates with ISMS: shared MR, audit programme, corrective actions. Differences: AI register, AIIA, lifecycle controls, data provenance. CCC Lead Auditor can leverage 27001 LA credential.</div></div>
+<div class="sec-lbl">6-week study plan (with your 27001 LA head start)</div>
+<div class="life-step"><div class="life-num">1</div><div class="life-body"><div class="life-title">Week 1 — Read Annex A cover to cover</div><div class="life-desc">Map each A-clause to your 27001 knowledge. Note the new-territory controls (A.5.4, A.6, A.7). Make flashcards for clause numbers.</div></div></div>
+<div class="life-step"><div class="life-num">2</div><div class="life-body"><div class="life-title">Week 2 — Deep dive A.5-A.7</div><div class="life-desc">Impact assessment, AI lifecycle, and data governance are the core exam differentiators. Work through the three impact levels with a real-world AI example.</div></div></div>
+<div class="life-step"><div class="life-num">3</div><div class="life-body"><div class="life-title">Week 3 — Clauses 6-8 (Planning & Operation)</div><div class="life-desc">Risk and opportunity assessment for AIMS. Operational planning differences vs 27001. Practice writing NCR-style observations for AI gaps.</div></div></div>
+<div class="life-step"><div class="life-num">4</div><div class="life-body"><div class="life-title">Week 4 — Mock audit scenarios</div><div class="life-desc">Practice case studies: identify the Annex A clause, write the NCR, propose the corrective action. Use past CQI/PECB exam question formats.</div></div></div>
+<div class="life-step"><div class="life-num">5-6</div><div class="life-body"><div class="life-title">Weeks 5-6 — Practice exams and consolidation</div><div class="life-desc">PECB practice questions. Focus on scenario-based questions requiring clause citation. Review integration points with 27001 and GDPR.</div></div></div>`,
+   resources:[
+     {n:'ISO 42001:2023 — Official Standard',u:'https://www.iso.org/standard/81230.html'},
+     {n:'PECB ISO 42001 Lead Auditor',u:'https://pecb.com/en/education-and-certification-for-individuals/iso-iec-42001'},
+     {n:'Alan Calder ISO 42001 Guide',u:'https://www.itgovernance.co.uk/iso-42001'}
+   ]
+  },
+  {key:'nis2',name:'NIS2 Directive',icon:'🇪🇺',color:'#185FA5',
+   tagline:'EU cybersecurity obligations for essential & important entities',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','Policy draft','Resources'],
+   concepts:[
+     {t:'Scope: essential vs important entities',b:'NIS2 introduces two tiers. Essential entities (energy, transport, banking, health, water, digital infrastructure) face strict proactive supervision. Important entities (postal, chemicals, food, manufacturing, digital providers) face reactive supervision. Fines: up to €10M or 2% global turnover for essential; €7M or 1.4% for important.'},
+     {t:'Art.21 — Ten mandatory security measures',b:'All in-scope entities must implement: (1) risk analysis and IS policies, (2) incident handling, (3) business continuity and crisis management, (4) supply chain security, (5) network security and access control, (6) vulnerability handling and disclosure, (7) cybersecurity assessment and audit practices, (8) cyber hygiene and training, (9) cryptography and encryption, (10) HR security and access control policies.'},
+     {t:'Art.23 — Three-step incident reporting',b:'Significant incident triggers a cascade: Early warning within 24 hours of awareness (was it malicious?). Incident notification within 72 hours with initial assessment. Final report within 1 month with root cause and cross-border impact. Significant incident = affects service availability, has substantial financial impact, or causes widespread disruption.'},
+     {t:'Art.20 — Management body accountability',b:'Top management must approve cybersecurity risk management measures and can be held personally liable for infringement. Management body members must attend regular cybersecurity training. First EU directive to create direct executive liability for cybersecurity governance failures.'}
+   ],
+   raci:[
+     {p:'Cybersecurity risk policy (Art.21)',r:'CISO',a:'Board/CEO',c:'Legal, IT',i:'All staff'},
+     {p:'Significant incident classification',r:'SecOps',a:'CISO',c:'Legal',i:'Management'},
+     {p:'24h/72h regulator notification',r:'Compliance',a:'CCO',c:'Legal, CISO',i:'Competent Authority'},
+     {p:'Supply chain security assessment',r:'Procurement/CISO',a:'CTO',c:'Legal',i:'Board'},
+     {p:'Management body training (Art.20)',r:'L&D/CISO',a:'CEO',c:'Board Secretary',i:'Regulators'}
+   ],
+   processes:[
+     {t:'Significant incident reporting',d:'Incident detected → severity assessed (is it significant?) → early warning within 24h → investigation and impact assessment → incident notification to CSIRT within 72h → containment and recovery → final report at 1 month → lessons-learned logged → risk register updated.'},
+     {t:'Supply chain security (Art.21.3)',d:'ICT supplier identified → criticality classification → security questionnaire or audit → contractual security clauses → register entry → periodic re-assessment → incident notification rights included in contract → escalation if supplier compromised.'},
+     {t:'Annual cybersecurity review',d:'Risk assessment updated → 10 Art.21 measures self-assessed → gap analysis → treatment plan approved by management body → management training scheduled → competent authority relationship confirmed → ISAC participation reviewed.'}
+   ],
+   ncrs:[
+     {h:'Critical — Management body not approving security measures (Art.20)',b:'Organisation cannot demonstrate that the management body formally approved the cybersecurity risk management measures. Art.20(1) makes this mandatory and creates personal liability for management. Approval must be minuted.'},
+     {h:'Major — No supply chain security policy (Art.21.3)',b:'Organisation has not assessed cybersecurity practices of its direct ICT suppliers. Art.21(3) requires entities to address security in supplier relationships. Absence of any supplier security programme = standalone major finding.'},
+     {h:'Minor — 24-hour early warning missed',b:'A significant ransomware incident affecting service availability was reported to the CSIRT 48 hours after awareness. Art.23 requires early warning within 24 hours. Late notification is a direct infringement regardless of whether the 72h notification was on time.'}
+   ],
+   evidence:['Board minutes showing approval of cybersecurity measures (Art.20)','Cybersecurity policy covering all 10 Art.21 areas','Significant incident register with classification rationale','Incident notification records with timestamps for 24h and 72h','Supply chain security assessment records','Management body training attendance records','Vulnerability disclosure policy (Art.21.2.h)','Business continuity and crisis management plan (Art.21.2.c)','Cryptography and encryption policy (Art.21.2.i)'],
+   lifecycle:['Scope: Determine if essential or important entity per Member State','Gap: Assess all 10 Art.21 measures against current controls','Governance: Brief board — establish Art.20 approval mechanism','Build: Incident classification criteria and 24h/72h reporting workflow','Supplier: Launch supply chain security programme','Operate: Annual review, management training, CSIRT relationship'],
+   policy:`<div class="pol-section"><div class="pol-num">§1 Scope</div><div class="pol-heading">Entity Classification</div><div class="pol-body">This policy applies to [Organisation] as a [Essential / Important] entity under NIS2 (EU 2022/2555) in [Member States]. The management body approved this policy on [date] per Art.20(1).</div><div class="pol-annotation">Auditor check: Must be approved by management body — not just CISO. Request board minutes with agenda item and resolution.</div></div>
+<div class="pol-section"><div class="pol-num">§3 Art.21 Measures</div><div class="pol-heading">Ten Mandatory Cybersecurity Measures</div><div class="pol-body"><table class="raci-table"><tr><th>Measure</th><th>Implementation</th><th>Owner</th></tr><tr><td>Risk analysis and IS policies</td><td>Annual risk assessment, approved policy suite</td><td>CISO</td></tr><tr><td>Incident handling</td><td>SIEM, IR playbooks, CSIRT registration</td><td>SecOps</td></tr><tr><td>Business continuity</td><td>BCP/DR tested annually, RTO/RPO defined</td><td>CTO</td></tr><tr><td>Supply chain security</td><td>Supplier questionnaire, contractual clauses</td><td>Procurement</td></tr><tr><td>Network and access control</td><td>Zero trust architecture, MFA enforced</td><td>IT/CISO</td></tr><tr><td>Vulnerability handling</td><td>Monthly scans, CVE patching SLA</td><td>SecOps</td></tr><tr><td>Cyber hygiene and training</td><td>Annual mandatory training, phishing simulation</td><td>L&D/CISO</td></tr><tr><td>Cryptography</td><td>AES-256, TLS 1.3 minimum</td><td>IT/CISO</td></tr><tr><td>HR security</td><td>Screening, NDA, termination procedures</td><td>HR/CISO</td></tr><tr><td>Access control</td><td>RBAC, PAM, quarterly access review</td><td>IT</td></tr></table></div><div class="pol-annotation">Auditor check: Each of the 10 measures must have a documented implementation with an owner. Missing even one = gap finding under Art.21.</div></div>
+<div class="pol-section"><div class="pol-num">§5 Incident Reporting</div><div class="pol-heading">Art.23 Reporting Obligations</div><div class="pol-body">Significant incidents: (a) Early warning within 24h of awareness. (b) Incident notification within 72h. (c) Final report within 1 month. The CISO owns classification. Clock starts from the moment on-call analyst confirms significance.</div><div class="pol-annotation">Auditor check: Test the classification procedure with a scenario. Who decides, and how fast? Ambiguity here = Art.23 risk.</div></div>`,
+   resources:[
+     {n:'NIS2 Directive — Official Journal (EU 2022/2555)',u:'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555'},
+     {n:'ENISA NIS2 Implementation Guidance',u:'https://www.enisa.europa.eu/topics/cybersecurity-policy/nis-directive-new'},
+     {n:'ENISA NIS2 Glossary and Key Concepts',u:'https://www.enisa.europa.eu/publications/nis2-glossary'}
+   ]
+  },
+  {key:'c5',name:'BSI C5:2020',icon:'☁️',color:'#0F6E56',
+   tagline:'German cloud security catalogue — 17 domains, 121 controls',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','Policy draft','Resources'],
+   concepts:[
+     {t:'What C5 is and who requires it',b:'Cloud Computing Compliance Criteria Catalogue (C5), published by Germany\'s Federal Office for Information Security (BSI). De facto mandatory for cloud services procured by German federal government and widely adopted by BaFin (financial sector). Results in a Type 1 or Type 2 attestation report — not a certificate.'},
+     {t:'17 control domains',b:'Organisation and IS (OIS), Human resources (HRS), Asset management (AM), Physical security (PS), Operations security (OPS), Identity and access (IAM), Cryptography (CRY), Communication security (COM), Portability (PI), Procurement (PRO), Product security (PSS), Sub-contractors (SSO), Incident management (SIM), Business continuity (BCM), Compliance (COS), Customer transparency (TPC), Environment parameters (Annex).'},
+     {t:'Type 1 vs Type 2 attestation',b:'Type 1: Auditor confirms controls are suitably designed at a point in time. Type 2: Auditor confirms controls operated effectively over 12 months — required by most procurement frameworks and BaFin. Cloud customers should always request Type 2. Type 1 alone does not demonstrate operational effectiveness.'},
+     {t:'Environment and context parameters (Annex)',b:'Unique to C5: the attestation must include a standardised description of the cloud environment — data centre locations, sub-processors, certifications held, supported identity federation standards, and incident notification SLAs. Directly useful for DORA Art.28 and NIS2 Art.21(3) supply chain due diligence.'}
+   ],
+   raci:[
+     {p:'C5 scope definition',r:'CISO/Cloud Architect',a:'CTO',c:'Legal, Compliance',i:'Management'},
+     {p:'Control evidence gathering',r:'Cloud Ops/SecOps',a:'CISO',c:'IT teams',i:'External auditor'},
+     {p:'Attestation report management',r:'Compliance',a:'CCO',c:'CISO, Legal',i:'Customers, BSI'},
+     {p:'Sub-processor management (SSO)',r:'Procurement/CISO',a:'CTO',c:'Legal',i:'Customers'},
+     {p:'Customer transparency (TPC)',r:'Product/Sales',a:'CCO',c:'Legal, CISO',i:'Cloud customers'}
+   ],
+   processes:[
+     {t:'C5 readiness assessment',d:'Scope cloud service → map to 17 C5 domains → evidence gap analysis → identify missing controls → remediation plan with owners → Type 1 audit readiness review → engage accredited auditor → evidence pack assembled → fieldwork → attestation report issued → publish in BSI portal.'},
+     {t:'Sub-processor change management',d:'New sub-processor identified → C5/ISO 27001 attestation requested → risk assessment → customer notification (typically 30 days per contract) → customer objection window → if approved, register updated → periodic re-assessment.'},
+     {t:'Customer due diligence support (TPC)',d:'Customer requests C5 report → check NDA → share attestation report → answer Annex questions → map C5 controls to customer\'s framework (DORA, NIS2) → follow-up through defined contact point.'}
+   ],
+   ncrs:[
+     {h:'Major — No documented key management procedures (CRY domain)',b:'Cloud provider cannot demonstrate documented cryptographic key management lifecycle procedures covering generation, storage, rotation, and destruction. C5 CRY-01 through CRY-05 require formal key management policy. Absence = critical attestation finding.'},
+     {h:'Major — Sub-processor list not current (SSO domain)',b:'Three sub-processors identified during fieldwork are not in the published register. C5 SSO-01 requires maintaining and publishing a current sub-processor list. Customers cannot meet their own NIS2/DORA obligations without accurate information.'},
+     {h:'Minor — Penetration test excludes shared infrastructure (OPS domain)',b:'Annual penetration test covered only customer-facing APIs; shared management plane was excluded. C5 OPS-20 requires testing to cover the full scope of the cloud service including management components.'}
+   ],
+   evidence:['C5 Type 2 attestation report (most recent period)','ISO 27001 certificate (if held)','Sub-processor register — current and published to customers','Cryptographic key management procedures and audit logs','Penetration test report covering full C5 scope','Incident notification procedures with customer SLAs (SIM)','Business continuity and DR test results (BCM)','Access review records for privileged cloud admins (IAM)','Environment and context parameters (Annex to attestation)'],
+   lifecycle:['Scope: Define cloud service boundary for C5 attestation','Map: 121 controls gap assessment using BSI Excel workbook','Remediate: Address gaps by domain priority (IAM, CRY, OPS first)','Type 1: Engage accredited auditor for design assessment','Operate: 12-month evidence collection period for Type 2','Type 2: Fieldwork → attestation issued → publish to customers → annual renewal'],
+   policy:`<div class="pol-section"><div class="pol-num">§1 Scope</div><div class="pol-heading">C5 Service Boundary</div><div class="pol-body">This policy applies to [Cloud Service Name] as assessed under BSI C5:2020. The service boundary includes [layers in scope]. Sub-processors are listed in the current Annex to the attestation report at [URL].</div><div class="pol-annotation">Auditor check: Scope in policy must match scope in attestation report exactly. Sub-processor list must be reachable at the stated URL.</div></div>
+<div class="pol-section"><div class="pol-num">§4 Identity and Access Management (IAM)</div><div class="pol-heading">Privileged Access Controls</div><div class="pol-body">All privileged access requires: (a) named individual accounts — no shared admins, (b) MFA enforced, (c) just-in-time access where feasible, (d) session recording for privileged sessions, (e) quarterly access review with CISO sign-off, (f) immediate revocation on role change within 4 hours.</div><div class="pol-annotation">Auditor check: C5 IAM-01 through IAM-08. Request last quarter\'s access review evidence. Informal reviews without documentation are not acceptable.</div></div>
+<div class="pol-section"><div class="pol-num">§9 Customer Transparency (TPC)</div><div class="pol-heading">Disclosure Obligations</div><div class="pol-body">Organisation will: (a) publish C5 Type 2 report to customers under NDA within 10 business days of request, (b) notify customers of sub-processor changes with 30 days advance notice, (c) maintain accurate Environment and Context Parameters in the Annex, (d) provide named contact for C5 queries.</div><div class="pol-annotation">Auditor check: TPC is a C5 differentiator. Inability to produce the report on request = TPC finding. Ask for evidence of the last two customer transparency requests and their resolution times.</div></div>`,
+   resources:[
+     {n:'BSI C5:2020 — Official Catalogue',u:'https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Empfehlungen-nach-Angriffszielen/Cloud-Computing/Anforderungskatalog-C5/anforderungskatalog-c5_node.html'},
+     {n:'BSI C5:2020 Workbook (all 121 controls)',u:'https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/CloudComputing/C5/C5-2020.html'},
+     {n:'ENISA Cloud Security Guidelines',u:'https://www.enisa.europa.eu/publications/cloud-security-guide-for-smes'}
+   ]
+  },
+  {key:'cloudgov',name:'Cloud Governance',icon:'🌐',color:'#854F0B',
+   tagline:'CSA CCM, shared responsibility, CIS benchmarks & DORA/NIS2 cloud obligations',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','Framework map','Resources'],
+   concepts:[
+     {t:'CSA Cloud Controls Matrix (CCM) v4',b:'197 controls across 17 domains — the most comprehensive cloud-specific control framework. Maps to ISO 27001, SOC 2, PCI DSS, GDPR, NIS2, NIST SP 800-53, and C5. The CAIQ (Consensus Assessment Initiative Questionnaire) is the self-assessment version used in cloud procurement. CSA STAR certification is built on CCM + ISO 27001.'},
+     {t:'Shared responsibility model',b:'IaaS: provider secures physical, network, hypervisor; customer secures OS, apps, data, identity. PaaS: provider adds OS and runtime; customer secures apps and data. SaaS: provider secures almost everything; customer secures data, identity, and access configuration. Misclassification of responsibilities is the root cause of most cloud security incidents.'},
+     {t:'DORA and NIS2 cloud obligations',b:'Both regulations treat cloud providers as critical third parties. DORA Art.28 requires financial entities to register all cloud providers as ICT third parties. NIS2 Art.21(3) requires supply chain security assessment. Both hold the regulated entity responsible even if the failure is in the provider\'s infrastructure — "I used a cloud provider" is not a defence.'},
+     {t:'CIS Benchmarks for cloud hardening',b:'CIS publishes hardening benchmarks for AWS, Azure, GCP, Kubernetes, and Docker. Level 1 = basic hygiene safe to apply anywhere. Level 2 = defence in depth. CIS Benchmark compliance is increasingly required by cyber liability insurers. Automated tools: Prowler (AWS), ScoutSuite (multi-cloud), Cloud Custodian, Defender for Cloud, Prisma Cloud.'}
+   ],
+   raci:[
+     {p:'Cloud risk assessment',r:'CISO/Cloud Architect',a:'CTO',c:'Legal, Compliance',i:'Board'},
+     {p:'Cloud vendor due diligence',r:'Procurement/CISO',a:'CTO',c:'Legal',i:'Management'},
+     {p:'Shared responsibility matrix',r:'Cloud Architect',a:'CTO',c:'CISO, Legal',i:'Dev teams'},
+     {p:'CIS benchmark compliance',r:'Cloud Ops/SecOps',a:'CISO',c:'Platform team',i:'Audit'},
+     {p:'DORA/NIS2 cloud contract review',r:'Legal',a:'CCO',c:'CISO, Procurement',i:'Board'}
+   ],
+   processes:[
+     {t:'Cloud service onboarding (DORA/NIS2 compliant)',d:'Cloud service identified → criticality classification (critical ICT provider?) → C5/SOC 2/ISO 27001 attestation requested → CAIQ completed by provider → contract review against DORA Art.30 and NIS2 Art.21(3) → shared responsibility matrix documented → risk register entry created → CIS benchmark baseline scan → ongoing monitoring schedule set.'},
+     {t:'Cloud security posture management',d:'CSPM tool deployed (Prisma Cloud, Defender for Cloud, AWS Security Hub) → daily scan against CIS Benchmark → findings triaged by severity → Critical/High patched within SLA → exceptions approved by CISO → monthly posture report to management → quarterly trend review.'},
+     {t:'Cloud incident response',d:'CSPM alert or manual detection → classify (cloud provider involved?) → activate shared responsibility matrix → notify provider if provider-side → parallel customer-side investigation → DORA/NIS2 significance assessment → regulator notification if significant → post-incident review with provider → SLA enforcement if provider at fault.'}
+   ],
+   ncrs:[
+     {h:'Critical — No shared responsibility matrix documented',b:'Organisation using IaaS cannot produce a shared responsibility matrix for any workload. Without this, control ownership is ambiguous. Regulators will hold the customer responsible for the entire stack if responsibility is not documented.'},
+     {h:'Major — Cloud providers not registered as ICT third parties (DORA Art.28)',b:'Financial institution uses three hyperscale cloud providers for critical workloads but none are in the ICT third-party register. DORA Art.28 is mandatory. Absence = fundamental DORA compliance gap.'},
+     {h:'Minor — CIS Benchmark scan excludes production',b:'Automated CIS benchmark scanning covers only development and staging. Production cloud workloads excluded from scan schedule. Control environment in production is therefore unverified.'}
+   ],
+   evidence:['Cloud provider C5/SOC 2 Type 2/ISO 27001 attestations','CAIQ (CSA v4) responses from critical cloud providers','Shared responsibility matrix per cloud service','ICT third-party register entries for cloud providers (DORA Art.28)','Art.30-compliant contracts with cloud providers','CIS Benchmark scan reports — production environments','CSPM dashboard reports (monthly minimum)','Cloud access reviews — privileged and service accounts','Business continuity test results for cloud-hosted services'],
+   lifecycle:['Inventory: Map all cloud services — IaaS/PaaS/SaaS — and classify criticality','Due diligence: Collect C5/SOC 2/ISO 27001 attestations and CAIQ from providers','Contract: Apply DORA Art.30 and NIS2 Art.21(3) contract requirements','Responsibility: Document shared responsibility matrix per workload','Harden: CIS Benchmark L1 baseline → L2 for critical workloads','Monitor: CSPM scanning, quarterly reviews, annual re-attestation'],
+   frameworkmap:`<div class="sec-lbl">Cloud governance framework cross-reference</div>
+<div class="concept-row"><div class="cr-title">CSA CCM v4 → ISO 27001:2022</div><div class="cr-body">Key alignments: CCM AIS (application security) → ISO A.8.25-28; CCM IAM → ISO A.5.15-18, A.8.2-5; CCM SEF (security incident mgmt) → ISO A.5.24-28; CCM BCR (business continuity) → ISO A.5.29-30. Use this mapping to avoid duplicating cloud and ISMS controls.</div></div>
+<div class="concept-row"><div class="cr-title">CSA CCM v4 → DORA Art.21-30</div><div class="cr-body">DORA ICT risk management maps to CCM: Art.6 (ICT framework) → CCM GRC; Art.8 (protection) → CCM IAM, IVS, CCC; Art.9 (detection) → CCM SEF, LOG; Art.21.3 (supply chain) → CCM STA. Use CCM as cloud-specific implementation guidance for DORA obligations.</div></div>
+<div class="concept-row"><div class="cr-title">C5:2020 → ISO 27001:2022</div><div class="cr-body">BSI publishes a formal mapping. C5 OPS → ISO A.8.9-19; C5 IAM → ISO A.5.15-18, A.8.2-5; C5 CRY → ISO A.8.24; C5 BCM → ISO A.5.29-30. C5 TPC (customer transparency) has no direct ISO equivalent — C5-specific work still required.</div></div>
+<div class="concept-row"><div class="cr-title">NIS2 Art.21 → CIS Controls v8</div><div class="cr-body">Art.21(2)(a) risk analysis → CIS IG1 (Controls 1-6); Art.21(2)(b) incident handling → CIS Control 17; Art.21(2)(c) business continuity → CIS Control 11; Art.21(2)(e) network security → CIS Controls 12-13; Art.21(2)(f) vulnerability handling → CIS Control 7.</div></div>
+<div class="concept-row"><div class="cr-title">Shared responsibility by service model</div><div class="cr-body"><table class="raci-table"><tr><th>Layer</th><th>IaaS</th><th>PaaS</th><th>SaaS</th></tr><tr><td>Physical / network</td><td>Provider</td><td>Provider</td><td>Provider</td></tr><tr><td>Hypervisor / OS</td><td>Provider/Customer</td><td>Provider</td><td>Provider</td></tr><tr><td>Application</td><td>Customer</td><td>Customer</td><td>Provider</td></tr><tr><td>Data</td><td>Customer</td><td>Customer</td><td>Customer</td></tr><tr><td>Identity / access</td><td>Customer</td><td>Customer</td><td>Customer</td></tr></table></div></div>`,
+   resources:[
+     {n:'CSA Cloud Controls Matrix v4',u:'https://cloudsecurityalliance.org/research/cloud-controls-matrix/'},
+     {n:'ENISA Cloud Security Guide',u:'https://www.enisa.europa.eu/publications/cloud-security-guide-for-smes'},
+     {n:'CIS Benchmarks — AWS, Azure, GCP',u:'https://www.cisecurity.org/cis-benchmarks/'},
+     {n:'BSI C5:2020 Official Catalogue',u:'https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Empfehlungen-nach-Angriffszielen/Cloud-Computing/Anforderungskatalog-C5/anforderungskatalog-c5_node.html'}
+   ]
+  }
+];
+
+function renderStudyHub(){
+  const list = document.getElementById('book-list');
+  list.innerHTML = BOOKS.map((b,bi)=>{
+    const tabContents = buildBookTabs(b,bi);
+    return `<div class="book-card" id="book-${b.key}">
+      <div class="book-head" onclick="toggleBook('${b.key}')">
+        <div class="book-ico" style="background:${b.color}22">${b.icon}</div>
+        <div class="book-meta">
+          <div class="book-name">${b.name}</div>
+          <div class="book-tagline">${b.tagline}</div>
+        </div>
+        <span class="book-arr" id="arr-${b.key}">▶</span>
+      </div>
+      <div class="book-body" id="body-${b.key}">
+        <div class="book-tabs">${b.tabs.map((t,i)=>`<button class="btab${i===0?' active':''}" onclick="switchTab('${b.key}',${i})">${t}</button>`).join('')}</div>
+        ${tabContents.map((c,i)=>`<div class="book-panel${i===0?' active':''}" id="pan-${b.key}-${i}">${c}</div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildBookTabs(b,bi){
+  const tabs=[];
+  // Tab 0: Overview/concepts
+  tabs.push(`<div class="sec-lbl">Core concepts</div>`+b.concepts.map(c=>`<div class="concept-row"><div class="cr-title">${c.t}</div><div class="cr-body">${c.b}</div></div>`).join(''));
+  // Tab 1: RACI
+  tabs.push(`<div class="sec-lbl">Responsibility matrix</div><table class="raci-table"><tr><th>Process</th><th><span class="raci-r">R</span></th><th><span class="raci-a">A</span></th><th><span class="raci-c">C</span></th><th><span class="raci-i">I</span></th></tr>`+b.raci.map(r=>`<tr><td>${r.p}</td><td class="raci-r">${r.r}</td><td class="raci-a">${r.a}</td><td class="raci-c">${r.c}</td><td class="raci-i">${r.i}</td></tr>`).join('')+`</table><div class="callout" style="margin-top:12px"><div class="callout-ico">💡</div><div class="callout-body"><strong>R</strong>=Responsible (does the work) <strong>A</strong>=Accountable (owns the outcome) <strong>C</strong>=Consulted (input required) <strong>I</strong>=Informed (notified of outcome)</div></div>`);
+  // Tab 2: Processes
+  tabs.push(`<div class="sec-lbl">Day-to-day process flows</div>`+b.processes.map((p,i)=>`<div class="process-step"><div class="ps-num">${i+1}</div><div class="ps-body"><div class="ps-title">${p.t}</div><div class="ps-desc">${p.d}</div></div></div>`).join(''));
+  // Tab 3: NCRs
+  tabs.push(`<div class="sec-lbl">Non-conformity examples</div>`+b.ncrs.map(n=>`<div class="ncr-card"><div class="ncr-head">${n.h}</div><div class="ncr-body">${n.b}</div></div>`).join(''));
+  // Tab 4: Evidence
+  tabs.push(`<div class="sec-lbl">Evidence checklist</div>`+b.evidence.map(e=>`<div class="ev-item"><div class="ev-ico">📄</div><div class="ev-text">${e}</div></div>`).join(''));
+  // Tab 5: Lifecycle
+  tabs.push(`<div class="sec-lbl">Implementation lifecycle</div>`+b.lifecycle.map((l,i)=>{
+    const parts=l.split(':');
+    return `<div class="life-step"><div class="life-num">${i+1}</div><div class="life-body"><div class="life-title">${parts[0]}</div><div class="life-desc">${parts.slice(1).join(':').trim()}</div></div></div>`;
+  }).join(''));
+  // Remaining tabs (policy, DPIA, DPO, incident, exam, resources)
+  b.tabs.slice(6).forEach((tabName,ti)=>{
+    const lname=tabName.toLowerCase().replace(/\s+/g,'');
+    if(lname.includes('resource')){
+      tabs.push(`<div class="sec-lbl">Key resources</div>`+b.resources.map(r=>`<div class="res-link"><div class="res-icon">🔗</div><div class="res-body"><div class="res-name">${r.n}</div><a class="res-url" href="${r.u}" target="_blank">${r.u.substring(0,50)}...</a></div></div>`).join(''));
+    } else if(lname.includes('policy')||lname.includes('draft')){
+      tabs.push(`<div class="sec-lbl">Annotated policy draft</div><div class="pol-doc">${b.policy}</div>`);
+    } else if(lname.includes('dpia')){
+      tabs.push(`<div class="sec-lbl">DPIA template (Art.35)</div><div class="pol-doc">${b.dpia}</div>`);
+    } else if(lname.includes('dpo')){
+      tabs.push(`<div class="sec-lbl">DPO annual report template</div><div class="pol-doc">${b.dporeport}</div>`);
+    } else if(lname.includes('incident')){
+      tabs.push(`<div class="sec-lbl">ICT incident report template (DORA Art.23)</div><div class="pol-doc">${b.incident}</div>`);
+    } else if(lname.includes('framework')){
+      tabs.push(b.frameworkmap);
+    } else if(lname.includes('exam')){
+      tabs.push(b.exam);
+    } else if(lname.includes('framework')||lname.includes('map')){
+      tabs.push(b.frameworkmap||'');
+    } else {
+      tabs.push(`<div class="sec-lbl">${tabName}</div><div style="color:var(--tx2);font-size:13px">Content coming soon.</div>`);
+    }
+  });
+  return tabs;
+}
+
+function toggleBook(key){
+  const body=document.getElementById(`body-${key}`);
+  const arr=document.getElementById(`arr-${key}`);
+  const open=body.style.display==='block';
+  body.style.display=open?'none':'block';
+  arr.textContent=open?'▶':'▼';
+}
+function switchTab(key,idx){
+  const book=BOOKS.find(b=>b.key===key);
+  book.tabs.forEach((_,i)=>{
+    const pan=document.getElementById(`pan-${key}-${i}`);
+    const btns=document.querySelectorAll(`#book-${key} .btab`);
+    if(pan)pan.classList.toggle('active',i===idx);
+    if(btns[i])btns[i].classList.toggle('active',i===idx);
+  });
+}
+
+function renderBM(){
+  const wrap=document.getElementById('bm-wrap');
+  if(!bookmarks.length){
+    wrap.innerHTML=`<div class="bm-empty"><div class="be-ico">⭐</div><div class="be-txt">No bookmarks yet. Open any framework in the Reference tab and tap the star to save it here.</div></div>`;
+    return;
+  }
+  wrap.innerHTML=bookmarks.map(id=>{
+    const fw=FW.find(f=>f.id===id);
+    if(!fw)return'';
+    const cc=CAT_COLORS[fw.cat]||{bg:'#f3f4f6',tx:'#374151'};
+    return `<div class="bm-card">
+      <div class="bm-card-ico" style="background:${cc.bg}">${fw.icon}</div>
+      <div class="bm-card-meta">
+        <div class="bm-card-name">${fw.name}</div>
+        <div class="bm-card-desc">${fw.controls} controls · ${cc.label}</div>
+      </div>
+      <span class="bm-rm" onclick="toggleBM('${fw.id}')" title="Remove bookmark">✕</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleDark(){
+  const d=document.documentElement;
+  const isDark=d.hasAttribute('data-dark');
+  if(isDark){d.removeAttribute('data-dark');document.getElementById('dark-btn').textContent='🌙';}
+  else{d.setAttribute('data-dark','');document.getElementById('dark-btn').textContent='☀️';}
+  localStorage.setItem('grc_dark',isDark?'':'1');
+}
+
+(function init(){
+  if(localStorage.getItem('grc_dark')==='1'){
+    document.documentElement.setAttribute('data-dark','');
+    document.getElementById('dark-btn').textContent='☀️';
+  }
+  renderRef();
+  renderStudyHub();
+  updateBMCount();
+  const total=FW.reduce((s,f)=>s+f.controls,0);
+  document.getElementById('hdr-sub').textContent=`${FW.length} frameworks · ${total} controls · 8 study books`;
+})();
+</script>
+</body>
+</html>
