@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#534AB7">
+<title>GRC Super Dashboard</title>
+<style>
+:root{
+  --bg:#f0f2f5;--surf:#fff;--surf2:#f4f5f8;--surf3:#eceef2;
+  --tx:#1a1a2e;--tx2:#4b5563;--tx3:#9ca3af;
+  --bd:#e5e7eb;--bd2:#d1d5db;
+  --ac:#534AB7;--acl:#EEEDFE;--ac2:#3C3489;
+  --fn:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+[data-dark]{
+  --bg:#0d0f18;--surf:#151823;--surf2:#1d2030;--surf3:#252838;
+  --tx:#e2e4ee;--tx2:#8b93a8;--tx3:#555e75;
+  --bd:#252838;--bd2:#2f3449;
+  --ac:#7F77DD;--acl:#26215C;--ac2:#AFA9EC;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:var(--fn);background:var(--bg);color:var(--tx);min-height:100vh}
+button{font-family:var(--fn);border:none;background:none;color:inherit;cursor:pointer}
+a{color:var(--ac);text-decoration:none}
+#hdr{position:sticky;top:0;z-index:40;background:var(--surf);border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;gap:8px;padding:0 14px;height:52px}
+.brand{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.bico{width:34px;height:34px;border-radius:9px;background:var(--acl);display:flex;align-items:center;
+  justify-content:center;font-size:18px;flex-shrink:0}
+.btitle{font-size:14px;font-weight:700;color:var(--tx)}
+.bsub{font-size:10px;color:var(--tx3);margin-top:1px}
+.hbtn{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;background:var(--surf2);border:1px solid var(--bd);color:var(--tx2);
+  font-size:17px;flex-shrink:0;cursor:pointer}
+#modenav{background:var(--surf);border-bottom:1px solid var(--bd);
+  display:flex;overflow-x:auto;padding:8px 14px;gap:6px;position:sticky;top:52px;z-index:39}
+#modenav::-webkit-scrollbar{display:none}
+.mode-btn{flex-shrink:0;display:flex;align-items:center;gap:6px;padding:7px 14px;
+  border-radius:20px;font-size:13px;font-weight:500;border:1.5px solid var(--bd);
+  color:var(--tx2);background:var(--surf2);transition:all .15s;white-space:nowrap}
+.mode-btn.active{background:var(--ac);border-color:var(--ac);color:#fff}
+.mode-btn .mico{font-size:15px}
+
+/* ===== REFERENCE MODE ===== */
+#ref-bar{padding:10px 14px;position:sticky;top:103px;z-index:38;background:var(--bg)}
+#ref-search{width:100%;padding:9px 14px;border-radius:10px;border:1.5px solid var(--bd);
+  background:var(--surf);font-size:14px;color:var(--tx);outline:none}
+#ref-search:focus{border-color:var(--ac)}
+#ref-cats{display:flex;gap:6px;overflow-x:auto;padding:8px 14px 4px;margin:0 -14px}
+#ref-cats::-webkit-scrollbar{display:none}
+.cat-pill{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;
+  border:1px solid var(--bd);background:var(--surf);color:var(--tx2);cursor:pointer;transition:all .15s}
+.cat-pill.active{background:var(--ac);border-color:var(--ac);color:#fff}
+#fw-list{padding:10px 14px 20px}
+.fw-card{background:var(--surf);border:1px solid var(--bd);border-radius:14px;
+  margin-bottom:10px;overflow:hidden;cursor:pointer;transition:all .15s}
+.fw-card:active{transform:scale(0.98)}
+.fw-head{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.fw-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:20px;flex-shrink:0}
+.fw-meta{flex:1;min-width:0}
+.fw-name{font-size:14px;font-weight:600;color:var(--tx)}
+.fw-desc{font-size:12px;color:var(--tx2);margin-top:2px}
+.fw-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.fw-count{font-size:11px;color:var(--tx3)}
+.cat-badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
+.fw-doms{display:none;border-top:1px solid var(--bd);padding:0 14px 10px}
+.fw-dom{padding:8px 0;border-bottom:1px solid var(--bd);display:flex;align-items:flex-start;gap:8px}
+.fw-dom:last-child{border-bottom:none}
+.dom-num{font-size:11px;font-weight:600;color:var(--ac);min-width:30px;flex-shrink:0;padding-top:2px}
+.dom-title{font-size:13px;font-weight:500;color:var(--tx)}
+.dom-ctrls{margin-top:4px;display:flex;flex-wrap:wrap;gap:4px}
+.ctrl-pill{font-size:11px;padding:2px 8px;border-radius:8px;background:var(--surf2);
+  color:var(--tx2);border:1px solid var(--bd)}
+.fw-expand{display:flex;align-items:center;justify-content:center;padding:8px 14px;
+  font-size:12px;color:var(--ac);border-top:1px solid var(--bd);background:var(--acl)}
+.bm-btn{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;font-size:16px;color:var(--tx3);cursor:pointer;background:none;border:none}
+.bm-btn.active{color:#f59e0b}
+.no-results{text-align:center;padding:40px 20px;color:var(--tx3);font-size:14px}
+
+/* ===== STUDY HUB MODE ===== */
+#study-wrap{padding:14px}
+.study-intro{background:var(--surf);border:1px solid var(--bd);border-radius:14px;
+  padding:16px;margin-bottom:14px}
+.si-title{font-size:16px;font-weight:700;color:var(--tx);margin-bottom:4px}
+.si-desc{font-size:13px;color:var(--tx2);line-height:1.5}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat-c{background:var(--acl);border-radius:10px;padding:10px;text-align:center}
+.stat-v{font-size:20px;font-weight:700;color:var(--ac)}
+.stat-l{font-size:10px;color:var(--tx2);margin-top:2px}
+.book-card{background:var(--surf);border:1px solid var(--bd);border-radius:14px;
+  margin-bottom:10px;overflow:hidden}
+.book-head{display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer}
+.book-ico{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;
+  justify-content:center;font-size:22px;flex-shrink:0}
+.book-meta{flex:1;min-width:0}
+.book-name{font-size:14px;font-weight:700;color:var(--tx)}
+.book-tagline{font-size:12px;color:var(--tx2);margin-top:2px}
+.book-arr{font-size:16px;color:var(--tx3);transition:transform .2s}
+.book-arr.open{transform:rotate(90deg)}
+.book-body{display:none;border-top:1px solid var(--bd)}
+.book-tabs{display:flex;overflow-x:auto;padding:8px 12px;gap:4px;border-bottom:1px solid var(--bd)}
+.book-tabs::-webkit-scrollbar{display:none}
+.btab{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;
+  color:var(--tx2);cursor:pointer;border:1px solid transparent;transition:all .15s}
+.btab.active{background:var(--ac);color:#fff;border-color:var(--ac)}
+.book-panel{padding:14px;display:none}
+.book-panel.active{display:block}
+.sec-lbl{font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;
+  letter-spacing:.06em;margin:14px 0 6px}
+.sec-lbl:first-child{margin-top:0}
+.concept-row{background:var(--surf2);border-radius:10px;padding:10px 12px;margin-bottom:6px}
+.cr-title{font-size:13px;font-weight:600;color:var(--tx)}
+.cr-body{font-size:12px;color:var(--tx2);margin-top:4px;line-height:1.5}
+.raci-table{width:100%;border-collapse:collapse;font-size:12px}
+.raci-table th{background:var(--surf2);padding:6px 8px;text-align:left;font-weight:600;
+  color:var(--tx2);border-bottom:1px solid var(--bd);font-size:11px}
+.raci-table td{padding:6px 8px;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:top}
+.raci-table tr:last-child td{border-bottom:none}
+.raci-r{font-weight:700;color:#dc2626;font-size:11px}
+.raci-a{font-weight:700;color:#d97706;font-size:11px}
+.raci-c{font-weight:700;color:#2563eb;font-size:11px}
+.raci-i{font-weight:700;color:#059669;font-size:11px}
+.process-step{display:flex;gap:10px;margin-bottom:8px}
+.ps-num{width:24px;height:24px;border-radius:50%;background:var(--ac);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
+  flex-shrink:0;margin-top:1px}
+.ps-body{flex:1}
+.ps-title{font-size:13px;font-weight:600;color:var(--tx)}
+.ps-desc{font-size:12px;color:var(--tx2);margin-top:2px;line-height:1.5}
+.ncr-card{background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:10px 12px;margin-bottom:6px}
+[data-dark] .ncr-card{background:#2d1515;border-color:#7f1d1d}
+.ncr-head{font-size:12px;font-weight:700;color:#dc2626}
+[data-dark] .ncr-head{color:#fca5a5}
+.ncr-body{font-size:12px;color:var(--tx2);margin-top:4px;line-height:1.5}
+.ev-item{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--bd)}
+.ev-item:last-child{border-bottom:none}
+.ev-ico{font-size:14px;flex-shrink:0;margin-top:1px}
+.ev-text{font-size:12px;color:var(--tx);line-height:1.4}
+.life-step{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)}
+.life-step:last-child{border-bottom:none}
+.life-num{width:22px;height:22px;border-radius:6px;background:var(--acl);color:var(--ac);
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
+  flex-shrink:0;margin-top:2px}
+.life-body{flex:1}
+.life-title{font-size:13px;font-weight:600;color:var(--tx)}
+.life-desc{font-size:12px;color:var(--tx2);margin-top:2px;line-height:1.5}
+.pol-doc{background:var(--surf2);border-radius:10px;padding:12px;font-size:12px;
+  color:var(--tx2);line-height:1.7;max-height:400px;overflow-y:auto}
+.pol-section{margin-bottom:12px}
+.pol-num{font-weight:700;color:var(--ac);font-size:11px}
+.pol-heading{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:4px}
+.pol-body{color:var(--tx2);font-size:12px;line-height:1.6}
+.pol-annotation{background:var(--acl);border-left:3px solid var(--ac);
+  padding:6px 10px;border-radius:0 6px 6px 0;margin-top:6px;font-size:11px;
+  color:var(--ac2);font-style:italic}
+.res-link{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd)}
+.res-link:last-child{border-bottom:none}
+.res-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.res-body{flex:1}
+.res-name{font-size:13px;font-weight:500;color:var(--tx)}
+.res-url{font-size:11px;color:var(--ac);margin-top:2px}
+.callout{border-radius:10px;padding:10px 12px;display:flex;gap:8px;margin:8px 0;
+  border-left:3px solid var(--ac);background:var(--acl)}
+.callout-ico{font-size:16px;flex-shrink:0;margin-top:1px}
+.callout-body{font-size:12px;color:var(--tx2);line-height:1.5}
+
+/* ===== BOOKMARKS MODE ===== */
+#bm-wrap{padding:14px}
+.bm-empty{text-align:center;padding:60px 20px;color:var(--tx3)}
+.bm-empty .be-ico{font-size:40px;margin-bottom:12px}
+.bm-empty .be-txt{font-size:14px}
+.bm-card{background:var(--surf);border:1px solid var(--bd);border-radius:12px;
+  padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.bm-card-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;
+  justify-content:center;font-size:18px;flex-shrink:0}
+.bm-card-meta{flex:1}
+.bm-card-name{font-size:13px;font-weight:600;color:var(--tx)}
+.bm-card-desc{font-size:11px;color:var(--tx2);margin-top:2px}
+.bm-rm{font-size:17px;color:var(--tx3);cursor:pointer;padding:4px}
+
+.view{display:none}
+.view.active{display:block}
+</style>
+</head>
+<body>
+<div id="hdr">
+  <div class="brand">
+    <div class="bico">🛡️</div>
+    <div>
+      <div class="btitle">GRC Super Dashboard</div>
+      <div class="bsub" id="hdr-sub">19 frameworks · 8 study books</div>
+    </div>
+  </div>
+  <button class="hbtn" id="dark-btn" title="Toggle dark mode" onclick="toggleDark()">🌙</button>
+</div>
+
+<div id="modenav">
+  <button class="mode-btn active" data-mode="ref" onclick="setMode('ref')">
+    <span class="mico">📋</span> Reference
+  </button>
+  <button class="mode-btn" data-mode="study" onclick="setMode('study')">
+    <span class="mico">📚</span> Study Hub
+  </button>
+  <button class="mode-btn" data-mode="bm" onclick="setMode('bm')">
+    <span class="mico">⭐</span> Bookmarks <span id="bm-count" style="margin-left:2px;opacity:.7"></span>
+  </button>
+</div>
+
+<!-- ===== REFERENCE MODE ===== -->
+<div id="view-ref" class="view active">
+  <div id="ref-bar">
+    <input id="ref-search" type="search" placeholder="Search frameworks, controls..." oninput="filterRef()">
+  </div>
+  <div style="padding:0 14px">
+    <div id="ref-cats">
+      <button class="cat-pill active" data-cat="all" onclick="setCat('all')">All</button>
+      <button class="cat-pill" data-cat="security" onclick="setCat('security')">Security</button>
+      <button class="cat-pill" data-cat="privacy" onclick="setCat('privacy')">Privacy</button>
+      <button class="cat-pill" data-cat="risk" onclick="setCat('risk')">Risk</button>
+      <button class="cat-pill" data-cat="ai" onclick="setCat('ai')">AI</button>
+      <button class="cat-pill" data-cat="resilience" onclick="setCat('resilience')">Resilience</button>
+      <button class="cat-pill" data-cat="cloud" onclick="setCat('cloud')">Cloud</button>
+    </div>
+  </div>
+  <div id="fw-list"></div>
+</div>
+
+<!-- ===== STUDY HUB MODE ===== -->
+<div id="view-study" class="view">
+  <div id="study-wrap">
+    <div class="study-intro">
+      <div class="si-title">GRC Study Hub</div>
+      <div class="si-desc">Deep-dive study books for NIST AI RMF, EU AI Act, GDPR, DORA, ISO 42001, NIS2, BSI C5, and Cloud Governance. Each book includes RACI, process flows, NCR examples, evidence checklists, lifecycle stages, policy drafts and document templates.</div>
+      <div class="stats-row">
+        <div class="stat-c"><div class="stat-v">8</div><div class="stat-l">Study books</div></div>
+        <div class="stat-c"><div class="stat-v">25+</div><div class="stat-l">RACI processes</div></div>
+        <div class="stat-c"><div class="stat-v">35+</div><div class="stat-l">Evidence items</div></div>
+      </div>
+    </div>
+    <div id="book-list"></div>
+  </div>
+</div>
+
+<!-- ===== BOOKMARKS MODE ===== -->
+<div id="view-bm" class="view">
+  <div id="bm-wrap"></div>
+</div>
+
+<script>
+const FW = [
+  {id:'iso27001',name:'ISO 27001:2022',icon:'🔐',cat:'security',
+   desc:'Information security management system — 93 controls across 4 Annexes',
+   controls:93,
+   doms:[
+     {n:'A.5',t:'Organizational Controls',ctrls:['A.5.1 Policies','A.5.2 Roles','A.5.3 SoD','A.5.4 Mgmt responsibilities','A.5.5 Contact authorities','A.5.7 Threat intelligence','A.5.9 Asset inventory','A.5.15 Access control','A.5.23 Cloud services','A.5.28 Incident response','A.5.34 Privacy PII']},
+     {n:'A.6',t:'People Controls',ctrls:['A.6.1 Screening','A.6.2 Terms of employment','A.6.3 Awareness','A.6.4 Disciplinary process','A.6.5 Termination','A.6.7 Remote working','A.6.8 Reporting events']},
+     {n:'A.7',t:'Physical Controls',ctrls:['A.7.1 Physical perimeter','A.7.2 Entry controls','A.7.3 Offices & facilities','A.7.4 Monitoring','A.7.9 Equipment off-premises','A.7.14 Secure disposal']},
+     {n:'A.8',t:'Technological Controls',ctrls:['A.8.2 Privileged access','A.8.3 Access restriction','A.8.5 Authentication','A.8.7 Malware protection','A.8.8 Vulnerability mgmt','A.8.9 Configuration mgmt','A.8.12 DLP','A.8.15 Logging','A.8.16 Monitoring','A.8.20 Networks','A.8.23 Web filtering','A.8.28 Secure coding']}
+   ]},
+  {id:'nistcsf',name:'NIST CSF 2.0',icon:'🏛️',cat:'security',
+   desc:'Cybersecurity framework with 6 functions — Govern, Identify, Protect, Detect, Respond, Recover',
+   controls:106,
+   doms:[
+     {n:'GV',t:'Govern',ctrls:['GV.OC Organizational context','GV.RM Risk mgmt strategy','GV.RR Roles & responsibilities','GV.PO Policy','GV.OV Oversight','GV.SC Supply chain']},
+     {n:'ID',t:'Identify',ctrls:['ID.AM Asset mgmt','ID.RA Risk assessment','ID.IM Improvement']},
+     {n:'PR',t:'Protect',ctrls:['PR.AA Identity mgmt','PR.AT Awareness training','PR.DS Data security','PR.PS Platform security','PR.IR Tech resilience']},
+     {n:'DE',t:'Detect',ctrls:['DE.CM Continuous monitoring','DE.AE Adverse event analysis']},
+     {n:'RS',t:'Respond',ctrls:['RS.MA Incident mgmt','RS.AN Analysis','RS.CO Communication','RS.MI Mitigation']},
+     {n:'RC',t:'Recover',ctrls:['RC.RP Recovery planning','RC.CO Communication']}
+   ]},
+  {id:'gdpr',name:'GDPR',icon:'🔏',cat:'privacy',
+   desc:'EU data protection regulation — 99 articles, 173 recitals covering personal data processing',
+   controls:47,
+   doms:[
+     {n:'Ch.II',t:'Principles (Art.5-11)',ctrls:['Art.5 Principles','Art.6 Lawful basis','Art.7 Consent','Art.9 Special categories','Art.10 Criminal data','Art.11 No ID required']},
+     {n:'Ch.III',t:'Data Subject Rights',ctrls:['Art.13-14 Transparency','Art.15 Access','Art.16 Rectification','Art.17 Erasure','Art.18 Restriction','Art.20 Portability','Art.21 Objection','Art.22 Automated decisions']},
+     {n:'Ch.IV',t:'Controller Obligations',ctrls:['Art.24 Responsibility','Art.25 Privacy by design','Art.28 Processors','Art.30 Records (ROPA)','Art.32 Security','Art.33 Breach notification','Art.34 Communication','Art.35 DPIA','Art.37-39 DPO']}
+   ]},
+  {id:'nistspr',name:'NIST SP 800-53 r5',icon:'🏢',cat:'security',
+   desc:'Federal security and privacy controls — 20 control families, 1000+ controls',
+   controls:1000,
+   doms:[
+     {n:'AC',t:'Access Control',ctrls:['AC-1 Policy','AC-2 Account Mgmt','AC-3 Access Enforcement','AC-5 Separation of Duties','AC-6 Least Privilege','AC-17 Remote Access']},
+     {n:'AU',t:'Audit & Accountability',ctrls:['AU-2 Event Logging','AU-3 Content of Audit Records','AU-6 Audit Review','AU-9 Audit Protection']},
+     {n:'CM',t:'Configuration Mgmt',ctrls:['CM-2 Baseline Config','CM-6 Config Settings','CM-7 Least Functionality','CM-8 System Inventory']},
+     {n:'IA',t:'Identification & Auth',ctrls:['IA-2 User Auth','IA-3 Device ID','IA-5 Authenticator Mgmt','IA-8 Non-Org Users']},
+     {n:'IR',t:'Incident Response',ctrls:['IR-1 Policy','IR-4 Incident Handling','IR-5 Monitoring','IR-6 Reporting']},
+     {n:'RA',t:'Risk Assessment',ctrls:['RA-2 Security Categorisation','RA-3 Risk Assessment','RA-5 Vulnerability Monitoring']}
+   ]},
+  {id:'pcidss',name:'PCI DSS v4.0',icon:'💳',cat:'security',
+   desc:'Payment card industry standard — 12 requirements protecting cardholder data',
+   controls:389,
+   doms:[
+     {n:'R1-2',t:'Network Security',ctrls:['1.1 Firewall standards','1.2 Default changes','2.1 Secure configs','2.2 System hardening']},
+     {n:'R3-4',t:'Data Protection',ctrls:['3.1 Data retention','3.2 SAD protection','3.4 PAN masking','3.5 Encryption','4.2 TLS in transit']},
+     {n:'R5-6',t:'Vulnerability Mgmt',ctrls:['5.1 Antimalware','5.3 Mechanisms','6.2 Secure software','6.3 Security awareness','6.4 Web-facing apps']},
+     {n:'R7-9',t:'Access Control',ctrls:['7.1 Least privilege','8.1 User IDs','8.2 Auth factors','8.3 MFA','9.1 Physical access']},
+     {n:'R10-12',t:'Monitoring & Policy',ctrls:['10.1 Audit logging','10.2 Log events','11.2 Vulnerability scans','11.3 Penetration testing','12.1 Info security policy']}
+   ]},
+  {id:'hipaa',name:'HIPAA',icon:'🏥',cat:'privacy',
+   desc:'US health data regulation — Security Rule, Privacy Rule and Breach Notification',
+   controls:75,
+   doms:[
+     {n:'§164.308',t:'Administrative Safeguards',ctrls:['Risk analysis','Risk management','Workforce security','Training','Incident procedures','Contingency plan','Evaluation']},
+     {n:'§164.310',t:'Physical Safeguards',ctrls:['Facility access','Workstation use','Workstation security','Device & media controls']},
+     {n:'§164.312',t:'Technical Safeguards',ctrls:['Access control','Audit controls','Integrity','Transmission security']},
+     {n:'§164.502',t:'Privacy Rule',ctrls:['Uses and disclosures','Minimum necessary','PHI de-identification','Patient rights','Notice of privacy practices']}
+   ]},
+  {id:'nis2',name:'NIS2 Directive',icon:'🇪🇺',cat:'risk',
+   desc:'EU network & information security for critical sectors — cybersecurity obligations',
+   controls:35,
+   doms:[
+     {n:'Art.20',t:'Governance',ctrls:['Mgmt body approval','Cybersecurity training','Liability regime']},
+     {n:'Art.21',t:'Security Measures',ctrls:['Policies & procedures','Incident handling','Business continuity','Supply chain security','Network security','Vulnerability handling','Cryptography','MFA','HR security']},
+     {n:'Art.23',t:'Reporting',ctrls:['Early warning 24h','Incident notification 72h','Final report 1 month','Intermediate reports']},
+     {n:'Art.24',t:'Standards',ctrls:['European standards','Certification schemes','Implementing acts']}
+   ]},
+  {id:'iso42001',name:'ISO 42001:2023',icon:'🤖',cat:'ai',
+   desc:'AI management system standard — Annex A controls for responsible AI governance',
+   controls:38,
+   doms:[
+     {n:'A.2',t:'AI Policies & Org',ctrls:['A.2.2 AI policy','A.2.3 Org roles','A.2.4 AI system inventory','A.2.5 Resources']},
+     {n:'A.3',t:'Internal Organization',ctrls:['A.3.2 AI objectives','A.3.3 Responsibility allocation','A.3.4 Review process']},
+     {n:'A.4',t:'Resources for AI',ctrls:['A.4.1 Infrastructure','A.4.2 Data for AI','A.4.3 Tools','A.4.4 AI competence']},
+     {n:'A.5',t:'AI Risk & Impact',ctrls:['A.5.2 AI risk assessment','A.5.3 Risk treatment','A.5.4 Impact assessment','A.5.5 Affected parties']},
+     {n:'A.6',t:'AI System Lifecycle',ctrls:['A.6.2 Design','A.6.3 Data for system','A.6.4 Training','A.6.5 Testing','A.6.7 Incident mgmt','A.6.8 Discontinuation']},
+     {n:'A.7',t:'Data for AI',ctrls:['A.7.2 Data needs','A.7.3 Data collection','A.7.4 Quality','A.7.5 Provenance','A.7.7 Privacy']}
+   ]},
+  {id:'euaiact',name:'EU AI Act',icon:'⚖️',cat:'ai',
+   desc:'EU regulation on AI systems — risk-based approach with four tiers (2024/1689)',
+   controls:50,
+   doms:[
+     {n:'Art.5',t:'Prohibited AI Practices',ctrls:['Subliminal manipulation','Vulnerability exploitation','Social scoring','Real-time biometrics','Emotion recognition (work/edu)','Untargeted scraping','Predictive policing','Biometric categorisation']},
+     {n:'Art.9-15',t:'High-Risk Requirements',ctrls:['Risk mgmt system','Data governance','Technical documentation','Logging & transparency','Human oversight','Accuracy & robustness']},
+     {n:'Art.16-27',t:'Provider/Deployer Obligations',ctrls:['Quality mgmt system','Conformity assessment','CE marking','Post-market monitoring','Serious incident reporting','FRIA for public bodies']},
+     {n:'Art.51-55',t:'GPAI Models',ctrls:['Technical documentation','Copyright policy','Training data summary','Systemic risk assessment','Adversarial testing']}
+   ]},
+  {id:'nistai',name:'NIST AI RMF 1.0',icon:'🎯',cat:'ai',
+   desc:'AI risk management framework — Govern, Map, Measure, Manage functions',
+   controls:72,
+   doms:[
+     {n:'GOVERN',t:'Organisational Context',ctrls:['GV-1.1 Policy','GV-1.2 Accountability','GV-1.3 Processes','GV-1.4 Culture','GV-2.1 Inventory','GV-2.2 Classification','GV-5.1 Supply chain','GV-6.1 Policies']},
+     {n:'MAP',t:'Identify & Classify',ctrls:['MP-1.1 Context','MP-1.5 Stakeholders','MP-2.1 Scientific validity','MP-2.3 AI impact','MP-3.1 AI risks','MP-3.5 Deployment context','MP-4.1 Risk categories','MP-5.1 Likelihood']},
+     {n:'MEASURE',t:'Analyse & Assess',ctrls:['MS-1.1 Metrics','MS-2.1 Trustworthy attributes','MS-2.3 Bias testing','MS-2.5 Robustness','MS-2.6 Explainability','MS-3.1 Feedback']},
+     {n:'MANAGE',t:'Treat & Monitor',ctrls:['MG-1.1 Risk response','MG-2.1 Treatment plans','MG-2.2 Residual risk','MG-3.1 Monitoring','MG-4.1 Residual tracking']}
+   ]},
+  {id:'dora',name:'DORA',icon:'🏦',cat:'resilience',
+   desc:'EU Digital Operational Resilience Act for financial sector ICT risk management',
+   controls:46,
+   doms:[
+     {n:'Ch.II',t:'ICT Risk Mgmt',ctrls:['Art.5 Board responsibility','Art.6 ICT framework','Art.8 Protection','Art.9 Detection','Art.10 Response','Art.11 Recovery','Art.12 Backup','Art.13 Learning','Art.14 Communication']},
+     {n:'Ch.III',t:'Incident Reporting',ctrls:['Art.17 Classification','Art.18 Criteria','Art.19 Initial report 4h','Art.20 Intermediate 72h','Art.21 Final report 1m']},
+     {n:'Ch.IV',t:'Resilience Testing',ctrls:['Art.24 Basic testing','Art.25 TLPT eligible','Art.26 TLPT requirements','Art.27 Tester requirements']},
+     {n:'Ch.V',t:'Third-Party Risk',ctrls:['Art.28 ICT provider register','Art.30 Contract provisions','Art.31 Critical ICT providers','Art.32 Oversight framework']}
+   ]},
+  {id:'soc2',name:'SOC 2',icon:'📊',cat:'security',
+   desc:'AICPA trust service criteria — security, availability, processing integrity, confidentiality, privacy',
+   controls:64,
+   doms:[
+     {n:'CC1',t:'Control Environment',ctrls:['CC1.1 COSO principles','CC1.2 Oversight','CC1.3 Management authority','CC1.4 Competence','CC1.5 Accountability']},
+     {n:'CC2-3',t:'Communication & Risk',ctrls:['CC2.1 Information','CC2.2 Internal comms','CC2.3 External comms','CC3.1 Risk assessment','CC3.2 Fraud risk','CC3.3 Change risk']},
+     {n:'CC6-9',t:'Access & Change Mgmt',ctrls:['CC6.1 Logical access','CC6.2 Authentication','CC6.6 External access','CC7.1 Security config','CC7.2 Threat detection','CC8.1 Change controls']},
+     {n:'A/C/PI',t:'Trust Service Criteria',ctrls:['A1 Availability','C1 Confidentiality','PI1 Processing integrity']}
+   ]},
+  {id:'iso22301',name:'ISO 22301:2019',icon:'♻️',cat:'resilience',
+   desc:'Business continuity management system — organisational resilience standard',
+   controls:31,
+   doms:[
+     {n:'§6',t:'Planning',ctrls:['Business impact analysis','Risk assessment','BCP objectives','Continuity requirements']},
+     {n:'§8',t:'Operation',ctrls:['BCP documentation','Incident response plan','Crisis comms','Recovery procedures','Exercise & testing','Warning & communication']},
+     {n:'§9',t:'Performance Evaluation',ctrls:['Monitoring','Internal audit','Management review']},
+     {n:'§10',t:'Improvement',ctrls:['Nonconformity handling','Corrective actions','Continual improvement']}
+   ]},
+  {id:'cobit',name:'COBIT 2019',icon:'🏗️',cat:'risk',
+   desc:'IT governance framework — 40 objectives across Governance and Management domains',
+   controls:40,
+   doms:[
+     {n:'EDM',t:'Evaluate, Direct & Monitor',ctrls:['EDM01 Governance framework','EDM02 Benefits delivery','EDM03 Risk optimisation','EDM04 Resource optimisation','EDM05 Stakeholder engagement']},
+     {n:'APO',t:'Align, Plan & Organise',ctrls:['APO01 Managed IT framework','APO02 Strategy','APO03 Architecture','APO04 Innovation','APO05 Portfolio','APO06 Budget','APO07 HR','APO08 Relationships','APO09 SLAs','APO10 Vendors','APO11 Quality','APO12 Risk','APO13 Security','APO14 Data']},
+     {n:'BAI',t:'Build, Acquire & Implement',ctrls:['BAI01 Programme mgmt','BAI02 Requirements','BAI03 Solutions','BAI04 Availability','BAI06 IT changes','BAI07 IT change acceptance','BAI08 Knowledge','BAI09 Assets','BAI10 Configuration','BAI11 Projects']},
+     {n:'DSS',t:'Deliver, Service & Support',ctrls:['DSS01 Operations','DSS02 Service requests','DSS03 Problems','DSS04 Continuity','DSS05 Security','DSS06 Business processes']},
+     {n:'MEA',t:'Monitor, Evaluate & Assess',ctrls:['MEA01 Performance','MEA02 Internal controls','MEA03 Compliance','MEA04 Assurance']}
+   ]},
+  {id:'mitre',name:'MITRE ATT&CK',icon:'⚔️',cat:'security',
+   desc:'Adversarial tactics, techniques and procedures — threat modelling & detection mapping',
+   controls:196,
+   doms:[
+     {n:'TA0001',t:'Initial Access',ctrls:['T1566 Phishing','T1190 Exploit public app','T1133 External remote services','T1195 Supply chain compromise','T1199 Trusted relationship']},
+     {n:'TA0002-3',t:'Execution & Persistence',ctrls:['T1059 Command scripting','T1053 Scheduled task','T1078 Valid accounts','T1543 Create system service','T1547 Boot autostart']},
+     {n:'TA0004-6',t:'Privilege & Defence Evasion',ctrls:['T1548 Abuse elevation','T1055 Process injection','T1562 Impair defences','T1070 Indicator removal','T1036 Masquerading']},
+     {n:'TA0009-11',t:'Collection & Exfiltration',ctrls:['T1005 Data from local system','T1039 Data from network share','T1041 Exfil over C2','T1567 Exfil to cloud storage','T1486 Data encrypted (ransomware)']}
+   ]},
+  {id:'owasp',name:'OWASP Top 10 + LLM',icon:'🕷️',cat:'security',
+   desc:'Web application and LLM security risks — OWASP Top 10 (2021) + LLM Top 10 (2025)',
+   controls:20,
+   doms:[
+     {n:'A01-A05',t:'OWASP Web Top 10',ctrls:['A01 Broken Access Control','A02 Cryptographic Failures','A03 Injection','A04 Insecure Design','A05 Security Misconfiguration','A06 Outdated Components','A07 Auth Failures','A08 Software Integrity','A09 Logging Failures','A10 SSRF']},
+     {n:'LLM01-05',t:'LLM Security (2025)',ctrls:['LLM01 Prompt Injection','LLM02 Sensitive Data Disclosure','LLM03 Supply Chain','LLM04 Data & Model Poisoning','LLM05 Insecure Output Handling']},
+     {n:'LLM06-10',t:'LLM Security cont.',ctrls:['LLM06 Excessive Agency','LLM07 System Prompt Leakage','LLM08 Vector/Embedding Weaknesses','LLM09 Misinformation','LLM10 Unbounded Consumption']}
+   ]},
+  {id:'nis2',name:'NIS2 Directive',icon:'🇪🇺',cat:'risk',
+   desc:'EU network & information security — 10 mandatory measures, essential vs important entity tiers',
+   controls:35,
+   doms:[
+     {n:'Art.20',t:'Management Accountability',ctrls:['Board approval of measures','Management training','Personal liability for infringement','Oversight responsibility']},
+     {n:'Art.21',t:'Ten Mandatory Security Measures',ctrls:['(1) Risk analysis & IS policies','(2) Incident handling','(3) Business continuity & crisis mgmt','(4) Supply chain security','(5) Network & access control','(6) Vulnerability handling & disclosure','(7) Cybersecurity assessment & audit','(8) Cyber hygiene & training','(9) Cryptography & encryption','(10) HR security & access control']},
+     {n:'Art.23',t:'Incident Reporting',ctrls:['Early warning 24h (was it malicious?)','Incident notification 72h with assessment','Final report 1 month with root cause','Intermediate reports on request','CSIRT registration']},
+     {n:'Art.24',t:'Standards & Certification',ctrls:['European standards use encouraged','ENISA cybersecurity certification schemes','Implementing acts for sector-specific guidance']}
+   ]},
+  {id:'c5',name:'BSI C5:2020',icon:'☁️',cat:'cloud',
+   desc:'German cloud security catalogue — 17 domains, 121 controls, Type 1/2 attestation',
+   controls:121,
+   doms:[
+     {n:'OIS/HRS/AM',t:'Organisation, HR & Assets',ctrls:['OIS-01 ISMS policy','OIS-04 Security reviews','HRS-01 Screening','HRS-04 Training','AM-01 Asset inventory','AM-05 Data classification']},
+     {n:'PS/OPS',t:'Physical & Operations',ctrls:['PS-01 Physical perimeter','PS-04 Secure areas','OPS-01 Documented procedures','OPS-08 Change management','OPS-16 Vulnerability management','OPS-20 Penetration testing']},
+     {n:'IAM/CRY/COM',t:'IAM, Crypto & Comms',ctrls:['IAM-01 Access control policy','IAM-03 Privileged access','IAM-06 MFA','CRY-01 Key management lifecycle','CRY-03 Encryption at rest','COM-01 Network security']},
+     {n:'SSO/SIM/BCM',t:'Sub-processors, Incidents & BCM',ctrls:['SSO-01 Sub-processor register','SSO-04 Sub-processor assessment','SIM-01 Incident classification','SIM-05 Customer notification SLAs','BCM-01 Business continuity plan','BCM-04 DR testing']},
+     {n:'TPC',t:'Customer Transparency (unique to C5)',ctrls:['TPC-01 Attestation report sharing','TPC-02 Environment parameters (Annex)','TPC-03 Sub-processor change notification','TPC-04 Incident communication to customers']}
+   ]},
+  {id:'csaccm',name:'CSA CCM v4',icon:'🌐',cat:'cloud',
+   desc:'Cloud Controls Matrix — 197 controls across 17 domains, maps to ISO 27001, DORA, NIS2, GDPR',
+   controls:197,
+   doms:[
+     {n:'AIS/CCC',t:'Application & Change Control',ctrls:['AIS-01 Application security baseline','AIS-03 Vulnerability testing','AIS-04 SAST/DAST','CCC-01 Change management policy','CCC-04 Unauthorised change detection','CCC-07 Release management']},
+     {n:'IAM/IVS',t:'Identity & Infrastructure',ctrls:['IAM-01 Identity policy','IAM-02 Strong authentication','IAM-04 Separation of duties','IAM-08 Credential lifecycle','IVS-01 Hypervisor security','IVS-04 Network segmentation','IVS-09 Network monitoring']},
+     {n:'DSP/EKM',t:'Data Security & Encryption',ctrls:['DSP-01 Data classification','DSP-04 Data retention & disposal','DSP-07 Data localisation','EKM-01 Key management policy','EKM-03 Encryption at rest','EKM-05 Key rotation']},
+     {n:'SEF/LOG',t:'Incident & Logging',ctrls:['SEF-02 Incident response policy','SEF-05 Incident reporting to authorities','SEF-07 Impact analysis','LOG-01 Logging policy','LOG-04 Audit log protection','LOG-06 Clock synchronisation']},
+     {n:'BCR/STA/GRC',t:'Continuity, Supply Chain & Governance',ctrls:['BCR-01 BCP policy','BCR-04 DR testing','STA-01 Third-party inventory','STA-05 Supply chain assessment','GRC-01 Governance framework','GRC-04 Policy reviews']}
+   ]}
+];
+
+const CAT_COLORS = {
+  security:{bg:'#E6F1FB',tx:'#0C447C',label:'Security'},
+  privacy:{bg:'#EAF3DE',tx:'#27500A',label:'Privacy'},
+  risk:{bg:'#FAEEDA',tx:'#633806',label:'Risk'},
+  ai:{bg:'#EEEDFE',tx:'#3C3489',label:'AI'},
+  resilience:{bg:'#E1F5EE',tx:'#085041',label:'Resilience'},
+  cloud:{bg:'#E6F1FB',tx:'#0C447C',label:'Cloud'}
+};
+
+let bookmarks = JSON.parse(localStorage.getItem('grc_bm')||'[]');
+let activeCat = 'all';
+let expanded = {};
+
+function saveBM(){localStorage.setItem('grc_bm',JSON.stringify(bookmarks));updateBMCount();}
+function updateBMCount(){
+  const c = bookmarks.length;
+  document.getElementById('bm-count').textContent = c?`(${c})`:'';
+}
+function toggleBM(id){
+  if(bookmarks.includes(id)){bookmarks=bookmarks.filter(x=>x!==id);}
+  else{bookmarks.push(id);}
+  saveBM();renderRef();renderBM();
+}
+
+function setMode(m){
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${m}`));
+  if(m==='bm')renderBM();
+}
+function setCat(c){
+  activeCat=c;
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.toggle('active',p.dataset.cat===c));
+  renderRef();
+}
+function filterRef(){renderRef();}
+
+function renderRef(){
+  const q=(document.getElementById('ref-search').value||'').toLowerCase();
+  const list=document.getElementById('fw-list');
+  let html='';let shown=0;
+  FW.forEach(fw=>{
+    if(activeCat!=='all'&&fw.cat!==activeCat)return;
+    if(q&&!fw.name.toLowerCase().includes(q)&&!fw.desc.toLowerCase().includes(q)&&
+       !fw.doms.some(d=>d.t.toLowerCase().includes(q)||d.ctrls.some(c=>c.toLowerCase().includes(q))))return;
+    shown++;
+    const cc=CAT_COLORS[fw.cat]||{bg:'#f3f4f6',tx:'#374151'};
+    const bmed=bookmarks.includes(fw.id);
+    const isExp=!!expanded[fw.id];
+    html+=`<div class="fw-card" id="fwc-${fw.id}">
+      <div class="fw-head" onclick="toggleFW('${fw.id}')">
+        <div class="fw-icon" style="background:${cc.bg}">${fw.icon}</div>
+        <div class="fw-meta">
+          <div class="fw-name">${fw.name}</div>
+          <div class="fw-desc">${fw.desc.substring(0,60)}...</div>
+        </div>
+        <div class="fw-right">
+          <span class="cat-badge" style="background:${cc.bg};color:${cc.tx}">${cc.label}</span>
+          <span class="fw-count">${fw.controls} controls</span>
+        </div>
+      </div>
+      <div class="fw-doms" id="fwd-${fw.id}" style="display:${isExp?'block':'none'}">
+        ${fw.doms.map(d=>`<div class="fw-dom">
+          <div class="dom-num">${d.n}</div>
+          <div>
+            <div class="dom-title">${d.t}</div>
+            <div class="dom-ctrls">${d.ctrls.map(c=>`<span class="ctrl-pill">${c}</span>`).join('')}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+      <div class="fw-expand" style="display:${isExp?'flex':'none'}" id="fwe-${fw.id}">
+        <button class="bm-btn ${bmed?'active':''}" onclick="event.stopPropagation();toggleBM('${fw.id}')" title="Bookmark">
+          ${bmed?'⭐':'☆'}
+        </button>
+        <span style="flex:1;text-align:center;font-size:12px;color:var(--ac)">${isExp?'▲ Collapse':'▼ Expand controls'}</span>
+      </div>
+    </div>`;
+  });
+  if(!shown)html='<div class="no-results">🔍 No frameworks match your search</div>';
+  list.innerHTML=html;
+}
+
+function toggleFW(id){
+  expanded[id]=!expanded[id];
+  const d=document.getElementById(`fwd-${id}`);
+  const e=document.getElementById(`fwe-${id}`);
+  if(d)d.style.display=expanded[id]?'block':'none';
+  if(e)e.style.display=expanded[id]?'flex':'none';
+}
+
+// ===== STUDY HUB DATA =====
+const BOOKS = [
+  {key:'nistai',name:'NIST AI RMF 1.0',icon:'🎯',color:'#534AB7',
+   tagline:'AI risk mgmt — Govern, Map, Measure, Manage',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','Policy draft','Resources'],
+   concepts:[
+     {t:'GOVERN',b:'Establishes the culture, policies and accountability structures for AI risk. Board-level ownership. Includes AI policy, risk appetite statement, roles, and supply chain requirements.'},
+     {t:'MAP',b:'Identifies and classifies AI risks in context. Requires stakeholder analysis, intended use documentation, scientific validity assessment, and impact categorisation before deployment.'},
+     {t:'MEASURE',b:'Quantifies and analyses AI risks. Covers bias testing, robustness, explainability, and trustworthy AI attribute scoring. Metrics defined per use-case, not one-size-fits-all.'},
+     {t:'MANAGE',b:'Treats, monitors and communicates residual AI risk. Risk response plans, treatment decisions (accept/mitigate/transfer/avoid), and ongoing post-deployment monitoring.'}
+   ],
+   raci:[
+     {p:'AI Risk Policy',r:'CISO',a:'Board/CEO',c:'Legal',i:'All staff'},
+     {p:'AI System Inventory',r:'AI/ML Team',a:'CISO',c:'Business owners',i:'Procurement'},
+     {p:'Impact Assessment',r:'Ethics/Privacy',a:'CISO',c:'Legal, Product',i:'Regulators'},
+     {p:'Bias & Robustness Testing',r:'AI/ML Team',a:'CISO',c:'QA, Legal',i:'Audit'},
+     {p:'Incident Response',r:'SecOps',a:'CISO',c:'Legal, PR',i:'Board'}
+   ],
+   processes:[
+     {t:'AI system onboarding',d:'New AI system request → classification (minimal/limited/high/unacceptable) → MAP risk profile → MEASURE baseline → GOVERN approval → deployment with monitoring plan.'},
+     {t:'Quarterly AI risk review',d:'MEASURE metrics gathered → anomaly analysis → risk register updated → treatment plans adjusted → GOVERN sign-off → board reporting.'},
+     {t:'AI incident response',d:'Detection → classification (AI-related?) → MANAGE response plan activated → containment → root cause analysis → post-incident MEASURE recalibration.'}
+   ],
+   ncrs:[
+     {h:'Major NCR — No AI system inventory',b:'Organisation cannot demonstrate a complete inventory of AI systems in production. MAP function cannot be performed without knowing which systems exist. Requires documented inventory within 30 days.'},
+     {h:'Minor NCR — Incomplete impact assessment',b:'Three high-risk AI systems lack documented impact assessments covering affected stakeholders. MAP-1.5 requires documented stakeholder analysis before deployment.'}
+   ],
+   evidence:['AI system inventory register (MAP-2.1)','AI risk classification records (MAP-2.2)','Impact assessment reports per system (MAP-3.5)','Bias testing results and thresholds (MS-2.3)','AI policy approved by board (GV-1.1)','Training records for AI teams (GV-4.1)','Incident log for AI-related events (MG-3.1)'],
+   lifecycle:['Scoping: Define AI system boundaries and intended use','MAP: Identify stakeholders, context, and risk categories','MEASURE: Run bias, robustness, and explainability assessments','GOVERN: Board approval and policy alignment','Deploy: Activate with monitoring and feedback loops','MANAGE: Ongoing risk tracking, treatment, and escalation'],
+   policy:`<div class="pol-section"><div class="pol-num">§1 Scope</div><div class="pol-heading">Purpose and Applicability</div><div class="pol-body">This policy governs all AI systems developed, procured, or deployed by the organisation. It applies to all staff, contractors, and third parties involved in AI lifecycle activities.</div><div class="pol-annotation">Auditor check: Scope statement must explicitly name high-risk AI categories. Vague scope = immediate gap finding.</div></div>
+<div class="pol-section"><div class="pol-num">§3 MAP Function</div><div class="pol-heading">AI System Classification</div><div class="pol-body">All AI systems must be classified as: Minimal, Limited, High, or Unacceptable risk. Classification must be documented before production deployment, reviewed annually, and updated on material change.</div><div class="pol-annotation">Auditor check: Look for classification records in the AI register. Request evidence for two systems — confirm classification logic is documented.</div></div>
+<div class="pol-section"><div class="pol-num">§5 MANAGE Function</div><div class="pol-heading">Risk Treatment and Monitoring</div><div class="pol-body">Risk treatment decisions (accept/mitigate/transfer/avoid) must be documented with residual risk scores. All high-risk AI systems require quarterly MEASURE reviews. Monitoring dashboards must alert on drift thresholds defined at deployment.</div><div class="pol-annotation">Auditor check: Request monitoring evidence for one high-risk system. Absence of drift alerts or thresholds = process breakdown finding.</div></div>`,
+   resources:[
+     {n:'NIST AI RMF 1.0 (official PDF)',u:'https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.100-1.pdf'},
+     {n:'NIST AI RMF Playbook',u:'https://airc.nist.gov/Docs/2'},
+     {n:'NIST AI Risk Management Framework Overview',u:'https://www.nist.gov/system/files/documents/2023/01/26/AI%20RMF%20Fact%20Sheet.pdf'}
+   ]
+  },
+  {key:'euaiact',name:'EU AI Act',icon:'⚖️',color:'#185FA5',
+   tagline:'Risk-tiered regulation — prohibited, high-risk, GPAI obligations',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','Policy draft','Resources'],
+   concepts:[
+     {t:'Four-tier risk system',b:'Unacceptable risk (banned), High-risk (Annex III obligations), Limited risk (transparency only), Minimal risk (self-governance). Classification drives the entire compliance burden.'},
+     {t:'High-risk obligations (Art.9-15)',b:'Risk management system, data governance, technical documentation, automatic logging, transparency to users, human oversight, and accuracy/robustness requirements — all mandatory before market placement.'},
+     {t:'Provider vs Deployer split',b:'Providers (build/distribute) carry most obligations. Deployers (use in professional context) carry monitoring, human oversight, and FRIA duties. Both can face sanctions.'},
+     {t:'GPAI models (Art.51-55)',b:'General-purpose AI models (like LLMs) face documentation, copyright policy, and training data transparency requirements. Systemic-risk models require adversarial testing and incident reporting.'}
+   ],
+   raci:[
+     {p:'AI System Risk Classification',r:'Product/Legal',a:'DPO/CCO',c:'Technical team',i:'Management'},
+     {p:'Technical Documentation',r:'Engineering',a:'Product Owner',c:'Legal',i:'Regulator'},
+     {p:'Conformity Assessment',r:'QA/Compliance',a:'CCO',c:'External auditor',i:'Board'},
+     {p:'Post-market Monitoring',r:'Operations',a:'Product Owner',c:'Legal, QA',i:'AI Office'},
+     {p:'Serious Incident Reporting',r:'Operations',a:'CCO',c:'Legal',i:'Regulators'}
+   ],
+   processes:[
+     {t:'High-risk AI system conformity',d:'Identify Annex III category → risk mgmt system setup → data governance review → technical file preparation → conformity assessment (self or third-party) → CE marking → register in EU database → post-market monitoring activation.'},
+     {t:'FRIA (public bodies)',d:'Fundamental Rights Impact Assessment → identify affected groups → assess impact on protected characteristics → document safeguards → management approval → update annually or on material change.'},
+     {t:'Serious incident reporting',d:'Incident detected → classify (serious harm to health, safety, fundamental rights?) → notify market surveillance authority → 15-day initial report → follow-up on root cause → corrective action plan.'}
+   ],
+   ncrs:[
+     {h:'Critical — No risk management system (Art.9)',b:'High-risk AI system deployed without documented risk management system. Art.9 requires continuous risk management throughout the lifecycle. Immediate suspension risk.'},
+     {h:'Major — Missing technical documentation (Art.11)',b:'Technical documentation file does not contain training data description or validation methodology as required by Annex IV. Conformity assessment cannot proceed without this.'}
+   ],
+   evidence:['AI system register with risk classification','Technical documentation file (Annex IV checklist)','Conformity assessment report or self-declaration','Data governance records (training data sources, quality)','Human oversight procedures and logs','Post-market monitoring plan and reports','FRIA documentation (for public sector deployers)'],
+   lifecycle:['Scope: Determine provider vs deployer role','Classify: Assess against Annex III and prohibited list','Design: Build in risk mgmt, data governance, oversight from day 1','Document: Technical file, logs, transparency materials','Assess: Conformity assessment (self or notified body)','Deploy: CE mark, EU database registration, monitor'],
+   policy:`<div class="pol-section"><div class="pol-num">§1 Scope</div><div class="pol-heading">Applicability and Role Definition</div><div class="pol-body">This policy applies to all AI systems placed on the EU market. The organisation acts as [Provider/Deployer — specify]. Prohibited practices under Art.5 are absolutely banned and may not be authorised by any manager.</div><div class="pol-annotation">Auditor check: Verify the role distinction is accurate and that Annex III screening has been conducted for all systems. Missing role definition = scoping gap.</div></div>
+<div class="pol-section"><div class="pol-num">§3 High-Risk Obligations</div><div class="pol-heading">Art.9-15 Requirements</div><div class="pol-body">All Annex III systems must have: (a) documented risk management system, (b) data governance policy, (c) technical documentation file, (d) automatic event logging, (e) transparency to users, (f) human oversight procedure, (g) accuracy benchmarks.</div><div class="pol-annotation">Auditor check: Request evidence for each of the seven requirements for one high-risk system. Missing any one = major NCR.</div></div>`,
+   resources:[
+     {n:'EU AI Act — Official Journal',u:'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689'},
+     {n:'EU AI Act Compliance Checker',u:'https://artificialintelligenceact.eu/assessment/eu-ai-act-compliance-checker/'},
+     {n:'European AI Office',u:'https://digital-strategy.ec.europa.eu/en/policies/european-ai-office'}
+   ]
+  },
+  {key:'gdpr',name:'GDPR',icon:'🔏',color:'#0F6E56',
+   tagline:'EU data protection — 8 principles, 8 rights, DPIA and breach obligations',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','DPIA template','DPO report','Resources'],
+   concepts:[
+     {t:'Seven Art.5 principles',b:'Lawfulness / fairness / transparency — Purpose limitation — Data minimisation — Accuracy — Storage limitation — Integrity & confidentiality — Accountability. Accountability sits with the controller and must be demonstrable.'},
+     {t:'Lawful basis (Art.6)',b:'One of six bases must apply: consent, contract, legal obligation, vital interests, public task, or legitimate interests (LIA required). Special category data (Art.9) needs an additional condition.'},
+     {t:'Data subject rights',b:'Eight rights: access (1 month), rectification (1 month), erasure (1 month), restriction, portability, objection, not subject to automated decision-making. Rights must be actionable — not just written in a privacy notice.'},
+     {t:'DPIA and prior consultation',b:'Art.35 requires DPIA when processing is "likely to result in high risk." Three types always require DPIA: systematic profiling, large-scale special categories, systematic public monitoring. If DPIA shows high residual risk → prior consultation with supervisory authority.'}
+   ],
+   raci:[
+     {p:'Privacy Notice / Policy',r:'DPO',a:'Controller (CEO)',c:'Legal, Marketing',i:'All staff'},
+     {p:'ROPA Maintenance',r:'DPO',a:'Controller',c:'Department heads',i:'Audit'},
+     {p:'DPIA',r:'DPO',a:'Controller',c:'IT, Legal, Business',i:'Supervisory Authority'},
+     {p:'Breach Notification (72h)',r:'CISO/SecOps',a:'DPO',c:'Legal',i:'Supervisory Authority'},
+     {p:'DSR Handling',r:'DPO',a:'Controller',c:'IT, HR, Legal',i:'Data subject'}
+   ],
+   processes:[
+     {t:'Data Subject Request (DSR) handling',d:'Request received → identity verification → scope clarification → 1-month clock starts → data gathered from all systems → response drafted → legal review → sent to subject → logged in DSR register.'},
+     {t:'72-hour breach notification',d:'Breach detected → CISO notified → severity assessed → DPO informed (within hours) → supervisory authority notified if risk to individuals → 72h clock runs from controller awareness → data subjects notified if high risk.'},
+     {t:'DPIA process',d:'Processing activity identified → screening (is DPIA required?) → DPIA scoping → consult DPO → risk assessment → identify safeguards → residual risk level → prior consultation if still high → document and approve.'}
+   ],
+   ncrs:[
+     {h:'Critical — No ROPA (Art.30)',b:'Organisation processing personal data without a Record of Processing Activities. Art.30 is mandatory for most organisations. Without ROPA, accountability principle cannot be demonstrated.'},
+     {h:'Major — 72-hour notification missed',b:'Data breach affecting 5,000 customers reported to supervisory authority 9 days after discovery. Art.33 requires notification within 72 hours of controller awareness — late notification is a standalone infringement.'}
+   ],
+   evidence:['Record of Processing Activities (ROPA) — Art.30','Data Protection Impact Assessments — Art.35','DPO appointment record and contact details','Breach notification log (even for non-reportable incidents)','DSR handling log with response dates','Consent records with timestamp and mechanism','Privacy notices version history','Processor agreements — Art.28 DPAs'],
+   lifecycle:['Map: Data flows, purposes, retention periods, third parties','Assess: DPIA screening for each processing activity','Design: Privacy by design — minimise data, encrypt, access control','Document: ROPA, DPAs, consent records, privacy notices','Operate: DSR process, breach procedures, DPO oversight','Review: Annual ROPA review, DPIA refresh on material change'],
+   dpia:`<div class="pol-section"><div class="pol-num">Part A</div><div class="pol-heading">Processing Description</div><div class="pol-body">System: [Name]. Controller: [Org]. DPO consulted: [Date]. Purpose: [describe]. Categories of data: [list]. Number of data subjects: [estimate]. Retention: [period]. Recipients: [list processors and third countries].</div><div class="pol-annotation">Auditor check: Verify this matches the ROPA entry. Discrepancies indicate ROPA is not kept current.</div></div>
+<div class="pol-section"><div class="pol-num">Part B</div><div class="pol-heading">Necessity and Proportionality</div><div class="pol-body">Lawful basis: [specify Art.6 basis and, if applicable, Art.9 condition]. Is the processing necessary for the stated purpose? [Yes/No with rationale]. Could the purpose be achieved with less data? [analysis]. Data minimisation measures implemented: [list].</div><div class="pol-annotation">Auditor check: Lawful basis must be identified in ROPA and consistent with privacy notice. Mismatch = transparency principle violation.</div></div>
+<div class="pol-section"><div class="pol-num">Part C</div><div class="pol-heading">Risk Assessment</div><div class="pol-body"><table class="raci-table"><tr><th>Risk</th><th>Likelihood</th><th>Severity</th><th>Safeguard</th><th>Residual</th></tr><tr><td>Unauthorised access to personal data</td><td>Medium</td><td>High</td><td>RBAC, encryption at rest</td><td>Low</td></tr><tr><td>Data subject rights not fulfilled</td><td>Low</td><td>Medium</td><td>DSR workflow, 1-month SLA</td><td>Low</td></tr><tr><td>Cross-border transfer without safeguard</td><td>Medium</td><td>High</td><td>SCCs in place</td><td>Low</td></tr></table></div></div>
+<div class="pol-section"><div class="pol-num">Part D</div><div class="pol-heading">DPO Recommendation</div><div class="pol-body">DPO recommendation: [Approve / Approve with conditions / Prior consultation required]. Conditions: [list if any]. Prior consultation required: [Yes/No]. DPO signature: __________ Date: __________</div><div class="pol-annotation">Auditor check: DPO recommendation must be documented even if controller overrides it. Override without DPO opinion = accountability gap.</div></div>`,
+   dporeport:`<div class="pol-section"><div class="pol-num">§1</div><div class="pol-heading">DPO Annual Report — [Year]</div><div class="pol-body">Prepared by: [DPO Name] | Reporting period: [dates] | Submitted to: Board/Management</div></div>
+<div class="pol-section"><div class="pol-num">§2</div><div class="pol-heading">Key Performance Metrics</div><div class="pol-body"><table class="raci-table"><tr><th>Metric</th><th>Target</th><th>Actual</th><th>Status</th></tr><tr><td>DSRs responded within 1 month</td><td>100%</td><td>96%</td><td>⚠️ 4 late</td></tr><tr><td>DPIA completions</td><td>All new high-risk</td><td>8/9</td><td>⚠️ 1 pending</td></tr><tr><td>Breach notifications filed (72h)</td><td>100%</td><td>100%</td><td>✅</td></tr><tr><td>Staff training completion</td><td>90%</td><td>87%</td><td>⚠️ 3% gap</td></tr></table></div></div>
+<div class="pol-section"><div class="pol-num">§3</div><div class="pol-heading">Breach Register Summary</div><div class="pol-body">Total incidents: [N]. Notified to supervisory authority: [N]. Data subjects notified: [N]. Root causes: [summarise]. Corrective actions: [summarise].</div><div class="pol-annotation">Auditor check: Every notifiable breach must appear in the register with notification date. Gaps indicate process failure not data minimisation.</div></div>
+<div class="pol-section"><div class="pol-num">§4</div><div class="pol-heading">Management Recommendations</div><div class="pol-body">1. [Key recommendation — e.g., ROPA update required for 3 new processing activities]. 2. [Processor due diligence programme — 5 Art.28 DPAs expired]. 3. [DSR workflow automation — current manual process causing latency]. Priority: [High/Medium/Low for each].</div></div>`,
+   resources:[
+     {n:'GDPR Official Text',u:'https://eur-lex.europa.eu/eli/reg/2016/679/oj'},
+     {n:'EDPB Guidelines and Recommendations',u:'https://www.edpb.europa.eu/our-work-tools/general-guidance/guidelines-recommendations-best-practices_en'},
+     {n:'ICO Accountability Framework',u:'https://ico.org.uk/for-organisations/accountability-framework/'}
+   ]
+  },
+  {key:'dora',name:'DORA',icon:'🏦',color:'#185FA5',
+   tagline:'Financial sector ICT resilience — 5 pillars, incident reporting timelines',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','Incident template','Resources'],
+   concepts:[
+     {t:'Pillar 1 — ICT Risk Management (Ch.II)',b:'Mandatory ICT risk management framework with board responsibility (Art.5.1). Must include protection, detection, response, recovery, and backup capabilities. Documented and tested annually.'},
+     {t:'Pillar 2 — Incident Reporting (Ch.III)',b:'Three-step reporting: Early warning within 4 hours of awareness, intermediate notification within 72 hours, final report within 1 month. Clock starts from "awareness" — not discovery of full extent.'},
+     {t:'Pillar 3 — Resilience Testing (Ch.IV)',b:'All in-scope entities do basic testing annually (vulnerability scans, scenario-based testing). Significant entities additionally perform TLPT (Threat-Led Penetration Testing) every 3 years using TIBER-EU methodology.'},
+     {t:'Pillar 4 — Third-Party Risk (Ch.V)',b:'ICT third-party register (Art.28) with all providers. Critical ICT providers designated by ESAs face direct oversight. Art.30 contract requirements are mandatory — include exit strategy, audit rights, SLAs.'}
+   ],
+   raci:[
+     {p:'ICT Risk Framework',r:'CTO/CISO',a:'Board',c:'Risk Committee',i:'All staff'},
+     {p:'ICT Incident Classification',r:'SecOps',a:'CISO',c:'Legal, Compliance',i:'Regulators'},
+     {p:'TLPT Coordination',r:'Red Team/CISO',a:'CTO',c:'External testers',i:'Regulators'},
+     {p:'ICT Third-Party Register',r:'Vendor Mgmt',a:'CTO',c:'Legal, Procurement',i:'Board'},
+     {p:'ICT Incident Report (regulator)',r:'Compliance',a:'CCO',c:'Legal, CISO',i:'Competent Authority'}
+   ],
+   processes:[
+     {t:'ICT incident reporting workflow',d:'Incident detected → classify (major?) → Early warning to regulator (4h) → investigation → Intermediate report (72h) → root cause analysis → Final report (1 month) → lessons learned → ICT risk register updated.'},
+     {t:'Third-party onboarding',d:'Vendor identified → ICT criticality assessment → Art.30 contract clauses checked → register entry created → risk assessment completed → ongoing monitoring plan activated → annual review scheduled.'},
+     {t:'TLPT execution (every 3 years)',d:'Scope definition → regulator notification → threat intelligence phase → red team testing → findings documented → debrief with regulator → remediation plan → attestation issued.'}
+   ],
+   ncrs:[
+     {h:'Critical — No ICT third-party register',b:'Organisation cannot produce the ICT third-party register required by Art.28. Competent authority can require production immediately. Absence indicates fundamental governance gap in third-party risk management.'},
+     {h:'Major — Incident reporting delay',b:'Major ICT incident reported to competent authority 6 days after awareness. Art.23 requires early warning within 4 hours and intermediate report within 72 hours. Late reporting is a standalone infringement with fine exposure.'}
+   ],
+   evidence:['ICT risk management framework document','ICT third-party register (Art.28) — all providers','Major ICT incident classification criteria','Incident notification records with timestamps','TLPT report or basic testing results','Business continuity plan with RTO/RPO','ICT-related contracts with Art.30 clauses','Board ICT risk reporting — quarterly minimum'],
+   lifecycle:['Scope: Confirm in-scope entity type (credit institution, investment firm, etc.)','Assess: ICT risk assessment against DORA requirements','Gap: Identify missing framework elements','Build: ICT risk framework, incident procedures, third-party register','Test: Basic resilience testing (Year 1); TLPT planning','Operate: Monitoring, reporting, annual review'],
+   incident:`<div class="pol-section"><div class="pol-num">Part A — Identification</div><div class="pol-heading">Incident Details</div><div class="pol-body">Reference: [INC-YYYY-NNN] | Classification: [Major / Non-major] | Date/time of awareness: [DD/MM/YYYY HH:MM] | Date/time of occurrence: [DD/MM/YYYY HH:MM] | Systems affected: [list] | Initial severity: [Critical/High/Medium]</div><div class="pol-annotation">Auditor check: "Awareness" date is the clock start for Art.23 timelines. This date must be clearly established and documented within the first hour of assessment.</div></div>
+<div class="pol-section"><div class="pol-num">Part B — Description</div><div class="pol-heading">Incident Narrative</div><div class="pol-body">Description: [What happened]. Root cause (preliminary): [initial hypothesis]. Services impacted: [list]. Client impact: [Yes/No — if yes, quantify]. Duration of disruption: [HH:MM]. Geographic scope: [countries/regions].</div></div>
+<div class="pol-section"><div class="pol-num">Part C — Initial Response</div><div class="pol-heading">Actions Taken</div><div class="pol-body">Containment measures: [list]. Notification chain: [internal parties notified with times]. Regulator notified: [Yes/No] at [time] via [channel]. Clients notified: [Yes/No]. PR/comms activated: [Yes/No]. Estimated recovery time: [estimate].</div><div class="pol-annotation">Auditor check: Early warning to competent authority must occur within 4 hours of awareness. Document the exact submission time. Any gap = Art.23 violation.</div></div>
+<div class="pol-section"><div class="pol-num">Part D — Follow-up Schedule</div><div class="pol-heading">Reporting Obligations</div><div class="pol-body">Intermediate report due: [T+72h = date/time] | Final report due: [T+1 month = date] | Lessons learned session: [scheduled date] | ICT risk register update: [assigned to / by date] | Board briefing: [next board meeting].</div></div>`,
+   resources:[
+     {n:'DORA Official Text (EU 2022/2554)',u:'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022R2554'},
+     {n:'EBA DORA Technical Standards',u:'https://www.eba.europa.eu/regulation-and-policy/operational-resilience/digital-operational-resilience-act-dora'},
+     {n:'ESMA DORA Guidelines',u:'https://www.esma.europa.eu/policy-activities/digital-finance/digital-operational-resilience-act'}
+   ]
+  },
+  {key:'iso42',name:'ISO 42001:2023',icon:'🤖',color:'#993556',
+   tagline:'AI management system — builds on ISO 27001 foundation',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','Policy draft','Exam guide','Resources'],
+   concepts:[
+     {t:'Annex A new-territory controls',b:'Goes beyond ISO 27001 to cover AI-specific areas: impact assessment (A.5.4), AI system lifecycle (A.6), data quality and provenance for AI (A.7), and responsible AI principles (A.2.2). Not just information security extended.'},
+     {t:'AIMS vs ISMS relationship',b:'ISO 42001 is designed to integrate with ISO 27001. If you have an ISMS, the AIMS can reference existing controls. Shared management review, audit programme, and corrective action process — separate register for AI-specific risks.'},
+     {t:'Impact assessment (A.5.4-5)',b:'Must assess impact at three levels: individual (bias, autonomy), group (discrimination, systemic effects), and societal (democracy, environment). Proportionate to AI system risk — high-risk systems need formal AIIA, minimal-risk can use lightweight checklist.'},
+     {t:'Exam differentiators (vs 27001)',b:'ISO 42001 questions probe: lifecycle controls not in 27001 (A.6), AI-specific data requirements (A.7), the three impact levels, and the role of "intended purpose" vs "foreseeable misuse." Expect scenario questions where you must cite the Annex A clause.'}
+   ],
+   raci:[
+     {p:'AIMS Scope & Policy',r:'CISO/AI Lead',a:'Top Management',c:'Legal, Ethics',i:'All staff'},
+     {p:'AI System Register',r:'AI/ML Team',a:'CISO',c:'Business owners',i:'Procurement'},
+     {p:'AI Impact Assessment',r:'Ethics/Privacy',a:'CISO',c:'Legal, Product',i:'Affected parties'},
+     {p:'AI Lifecycle Controls',r:'Engineering',a:'AI Lead',c:'QA, Security',i:'Audit'},
+     {p:'AIMS Internal Audit',r:'Internal Audit',a:'Top Mgmt',c:'CISO',i:'Certification body'}
+   ],
+   processes:[
+     {t:'AI system impact assessment',d:'System identified → three-level impact screening (individual / group / societal) → risk level determined → full AIIA or lightweight checklist → safeguards identified → documented in AI register → management approval → review trigger set.'},
+     {t:'AI data governance',d:'Training data identified → A.7.2 data needs documented → provenance traced → quality assessment (A.7.4) → bias screening → privacy check (A.7.7) → approval before use in production model.'},
+     {t:'AIMS surveillance audit preparation',d:'Internal audit scope confirmed → AI register reviewed → evidence pack assembled (policy, AIIA records, lifecycle docs, training) → management review conducted → corrective actions closed → pre-audit readiness check.'}
+   ],
+   ncrs:[
+     {h:'Major NCR — No AI impact assessment records (A.5.4)',b:'Organisation has deployed three AI systems affecting employment decisions but cannot produce AI impact assessments. Clause 6.1.2 requires documented impact assessment before deployment of systems with significant impact potential.'},
+     {h:'Minor NCR — Training data provenance not documented (A.7.5)',b:'Two production AI models lack documented training data provenance records. A.7.5 requires organisations to understand the origin and lineage of training data used in AI systems.'}
+   ],
+   evidence:['AIMS scope statement and policy','AI system register with impact classification','AI Impact Assessment (AIIA) records — per system','Training data governance records (A.7 compliance)','AI lifecycle documentation — design, test, deploy, retire','Responsible AI principles statement with operationalisation','Internal audit report (AIMS scope)','Management review minutes with AIMS agenda items','Corrective action register'],
+   lifecycle:['Context: Map AI landscape — systems, providers, use cases','Gap: ISO 42001 gap assessment vs current ISMS','Design: AIMS scope, policy, AI register, impact process','Implement: Lifecycle controls, data governance, training','Audit: Internal audit → management review → close CARs','Certify: Stage 1 (document review) → Stage 2 (on-site) → surveillance'],
+   policy:`<div class="pol-section"><div class="pol-num">§1 Scope</div><div class="pol-heading">AIMS Applicability</div><div class="pol-body">This AIMS applies to [describe AI activities — development/deployment/procurement]. Exclusions: [list any Annex A controls excluded with justification]. The AIMS integrates with the existing ISMS (ISO 27001:2022 certified).</div><div class="pol-annotation">Auditor check: Exclusions must be justified. "We don't develop AI" is not sufficient if the organisation deploys third-party AI — deployer obligations still apply.</div></div>
+<div class="pol-section"><div class="pol-num">§3 Responsible AI Principles</div><div class="pol-heading">A.2.2 Principle Operationalisation</div><div class="pol-body"><table class="raci-table"><tr><th>Principle</th><th>Operational definition</th><th>Control reference</th></tr><tr><td>Fairness</td><td>Bias testing before deployment; monitored post-deployment</td><td>A.5.4, A.6.5</td></tr><tr><td>Transparency</td><td>Explainability score documented; users informed of AI involvement</td><td>A.6.2</td></tr><tr><td>Privacy</td><td>GDPR DPIA and AI AIIA conducted jointly for high-risk systems</td><td>A.7.7</td></tr><tr><td>Safety</td><td>Safety testing before production; incident escalation to CISO</td><td>A.6.5</td></tr></table></div><div class="pol-annotation">Auditor check: Principles must be operationalised — "we value fairness" is not a control. Expect the auditor to trace each principle to a measurable activity.</div></div>`,
+   exam:`<div class="sec-lbl">Exam domain breakdown (estimated)</div>
+<div class="concept-row"><div class="cr-title">Clause 4-6 — Context, Leadership, Planning (25%)</div><div class="cr-body">Scope definition, AI policy, risk and impact assessment process. Exam questions will ask you to apply Annex A references to scenario-based gaps.</div></div>
+<div class="concept-row"><div class="cr-title">Annex A — AIMS Controls (35%)</div><div class="cr-body">Deep knowledge of A.5 (policies), A.6 (lifecycle), A.7 (data). Expect "which clause" questions and gap identification from case studies. Know the three impact levels cold.</div></div>
+<div class="concept-row"><div class="cr-title">Clause 8-10 — Operation, Evaluation, Improvement (25%)</div><div class="cr-body">Operational planning, performance evaluation, internal audit, management review, nonconformity handling. Mirrors ISO 27001 structure — your ISMS LA knowledge applies directly.</div></div>
+<div class="concept-row"><div class="cr-title">Integration with ISO 27001 (15%)</div><div class="cr-body">How AIMS integrates with ISMS: shared MR, audit programme, corrective actions. Differences: AI register, AIIA, lifecycle controls, data provenance. CCC Lead Auditor can leverage 27001 LA credential.</div></div>
+<div class="sec-lbl">6-week study plan (with your 27001 LA head start)</div>
+<div class="life-step"><div class="life-num">1</div><div class="life-body"><div class="life-title">Week 1 — Read Annex A cover to cover</div><div class="life-desc">Map each A-clause to your 27001 knowledge. Note the new-territory controls (A.5.4, A.6, A.7). Make flashcards for clause numbers.</div></div></div>
+<div class="life-step"><div class="life-num">2</div><div class="life-body"><div class="life-title">Week 2 — Deep dive A.5-A.7</div><div class="life-desc">Impact assessment, AI lifecycle, and data governance are the core exam differentiators. Work through the three impact levels with a real-world AI example.</div></div></div>
+<div class="life-step"><div class="life-num">3</div><div class="life-body"><div class="life-title">Week 3 — Clauses 6-8 (Planning & Operation)</div><div class="life-desc">Risk and opportunity assessment for AIMS. Operational planning differences vs 27001. Practice writing NCR-style observations for AI gaps.</div></div></div>
+<div class="life-step"><div class="life-num">4</div><div class="life-body"><div class="life-title">Week 4 — Mock audit scenarios</div><div class="life-desc">Practice case studies: identify the Annex A clause, write the NCR, propose the corrective action. Use past CQI/PECB exam question formats.</div></div></div>
+<div class="life-step"><div class="life-num">5-6</div><div class="life-body"><div class="life-title">Weeks 5-6 — Practice exams and consolidation</div><div class="life-desc">PECB practice questions. Focus on scenario-based questions requiring clause citation. Review integration points with 27001 and GDPR.</div></div></div>`,
+   resources:[
+     {n:'ISO 42001:2023 — Official Standard',u:'https://www.iso.org/standard/81230.html'},
+     {n:'PECB ISO 42001 Lead Auditor',u:'https://pecb.com/en/education-and-certification-for-individuals/iso-iec-42001'},
+     {n:'Alan Calder ISO 42001 Guide',u:'https://www.itgovernance.co.uk/iso-42001'}
+   ]
+  },
+  {key:'nis2',name:'NIS2 Directive',icon:'🇪🇺',color:'#185FA5',
+   tagline:'EU cybersecurity obligations for essential & important entities',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','Policy draft','Resources'],
+   concepts:[
+     {t:'Scope: essential vs important entities',b:'NIS2 introduces two tiers. Essential entities (energy, transport, banking, health, water, digital infrastructure) face strict proactive supervision. Important entities (postal, chemicals, food, manufacturing, digital providers) face reactive supervision. Fines: up to €10M or 2% global turnover for essential; €7M or 1.4% for important.'},
+     {t:'Art.21 — Ten mandatory security measures',b:'All in-scope entities must implement: (1) risk analysis and IS policies, (2) incident handling, (3) business continuity and crisis management, (4) supply chain security, (5) network security and access control, (6) vulnerability handling and disclosure, (7) cybersecurity assessment and audit practices, (8) cyber hygiene and training, (9) cryptography and encryption, (10) HR security and access control policies.'},
+     {t:'Art.23 — Three-step incident reporting',b:'Significant incident triggers a cascade: Early warning within 24 hours of awareness (was it malicious?). Incident notification within 72 hours with initial assessment. Final report within 1 month with root cause and cross-border impact. Significant incident = affects service availability, has substantial financial impact, or causes widespread disruption.'},
+     {t:'Art.20 — Management body accountability',b:'Top management must approve cybersecurity risk management measures and can be held personally liable for infringement. Management body members must attend regular cybersecurity training. First EU directive to create direct executive liability for cybersecurity governance failures.'}
+   ],
+   raci:[
+     {p:'Cybersecurity risk policy (Art.21)',r:'CISO',a:'Board/CEO',c:'Legal, IT',i:'All staff'},
+     {p:'Significant incident classification',r:'SecOps',a:'CISO',c:'Legal',i:'Management'},
+     {p:'24h/72h regulator notification',r:'Compliance',a:'CCO',c:'Legal, CISO',i:'Competent Authority'},
+     {p:'Supply chain security assessment',r:'Procurement/CISO',a:'CTO',c:'Legal',i:'Board'},
+     {p:'Management body training (Art.20)',r:'L&D/CISO',a:'CEO',c:'Board Secretary',i:'Regulators'}
+   ],
+   processes:[
+     {t:'Significant incident reporting',d:'Incident detected → severity assessed (is it significant?) → early warning within 24h → investigation and impact assessment → incident notification to CSIRT within 72h → containment and recovery → final report at 1 month → lessons-learned logged → risk register updated.'},
+     {t:'Supply chain security (Art.21.3)',d:'ICT supplier identified → criticality classification → security questionnaire or audit → contractual security clauses → register entry → periodic re-assessment → incident notification rights included in contract → escalation if supplier compromised.'},
+     {t:'Annual cybersecurity review',d:'Risk assessment updated → 10 Art.21 measures self-assessed → gap analysis → treatment plan approved by management body → management training scheduled → competent authority relationship confirmed → ISAC participation reviewed.'}
+   ],
+   ncrs:[
+     {h:'Critical — Management body not approving security measures (Art.20)',b:'Organisation cannot demonstrate that the management body formally approved the cybersecurity risk management measures. Art.20(1) makes this mandatory and creates personal liability for management. Approval must be minuted.'},
+     {h:'Major — No supply chain security policy (Art.21.3)',b:'Organisation has not assessed cybersecurity practices of its direct ICT suppliers. Art.21(3) requires entities to address security in supplier relationships. Absence of any supplier security programme = standalone major finding.'},
+     {h:'Minor — 24-hour early warning missed',b:'A significant ransomware incident affecting service availability was reported to the CSIRT 48 hours after awareness. Art.23 requires early warning within 24 hours. Late notification is a direct infringement regardless of whether the 72h notification was on time.'}
+   ],
+   evidence:['Board minutes showing approval of cybersecurity measures (Art.20)','Cybersecurity policy covering all 10 Art.21 areas','Significant incident register with classification rationale','Incident notification records with timestamps for 24h and 72h','Supply chain security assessment records','Management body training attendance records','Vulnerability disclosure policy (Art.21.2.h)','Business continuity and crisis management plan (Art.21.2.c)','Cryptography and encryption policy (Art.21.2.i)'],
+   lifecycle:['Scope: Determine if essential or important entity per Member State','Gap: Assess all 10 Art.21 measures against current controls','Governance: Brief board — establish Art.20 approval mechanism','Build: Incident classification criteria and 24h/72h reporting workflow','Supplier: Launch supply chain security programme','Operate: Annual review, management training, CSIRT relationship'],
+   policy:`<div class="pol-section"><div class="pol-num">§1 Scope</div><div class="pol-heading">Entity Classification</div><div class="pol-body">This policy applies to [Organisation] as a [Essential / Important] entity under NIS2 (EU 2022/2555) in [Member States]. The management body approved this policy on [date] per Art.20(1).</div><div class="pol-annotation">Auditor check: Must be approved by management body — not just CISO. Request board minutes with agenda item and resolution.</div></div>
+<div class="pol-section"><div class="pol-num">§3 Art.21 Measures</div><div class="pol-heading">Ten Mandatory Cybersecurity Measures</div><div class="pol-body"><table class="raci-table"><tr><th>Measure</th><th>Implementation</th><th>Owner</th></tr><tr><td>Risk analysis and IS policies</td><td>Annual risk assessment, approved policy suite</td><td>CISO</td></tr><tr><td>Incident handling</td><td>SIEM, IR playbooks, CSIRT registration</td><td>SecOps</td></tr><tr><td>Business continuity</td><td>BCP/DR tested annually, RTO/RPO defined</td><td>CTO</td></tr><tr><td>Supply chain security</td><td>Supplier questionnaire, contractual clauses</td><td>Procurement</td></tr><tr><td>Network and access control</td><td>Zero trust architecture, MFA enforced</td><td>IT/CISO</td></tr><tr><td>Vulnerability handling</td><td>Monthly scans, CVE patching SLA</td><td>SecOps</td></tr><tr><td>Cyber hygiene and training</td><td>Annual mandatory training, phishing simulation</td><td>L&D/CISO</td></tr><tr><td>Cryptography</td><td>AES-256, TLS 1.3 minimum</td><td>IT/CISO</td></tr><tr><td>HR security</td><td>Screening, NDA, termination procedures</td><td>HR/CISO</td></tr><tr><td>Access control</td><td>RBAC, PAM, quarterly access review</td><td>IT</td></tr></table></div><div class="pol-annotation">Auditor check: Each of the 10 measures must have a documented implementation with an owner. Missing even one = gap finding under Art.21.</div></div>
+<div class="pol-section"><div class="pol-num">§5 Incident Reporting</div><div class="pol-heading">Art.23 Reporting Obligations</div><div class="pol-body">Significant incidents: (a) Early warning within 24h of awareness. (b) Incident notification within 72h. (c) Final report within 1 month. The CISO owns classification. Clock starts from the moment on-call analyst confirms significance.</div><div class="pol-annotation">Auditor check: Test the classification procedure with a scenario. Who decides, and how fast? Ambiguity here = Art.23 risk.</div></div>`,
+   resources:[
+     {n:'NIS2 Directive — Official Journal (EU 2022/2555)',u:'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555'},
+     {n:'ENISA NIS2 Implementation Guidance',u:'https://www.enisa.europa.eu/topics/cybersecurity-policy/nis-directive-new'},
+     {n:'ENISA NIS2 Glossary and Key Concepts',u:'https://www.enisa.europa.eu/publications/nis2-glossary'}
+   ]
+  },
+  {key:'c5',name:'BSI C5:2020',icon:'☁️',color:'#0F6E56',
+   tagline:'German cloud security catalogue — 17 domains, 121 controls',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','Policy draft','Resources'],
+   concepts:[
+     {t:'What C5 is and who requires it',b:'Cloud Computing Compliance Criteria Catalogue (C5), published by Germany\'s Federal Office for Information Security (BSI). De facto mandatory for cloud services procured by German federal government and widely adopted by BaFin (financial sector). Results in a Type 1 or Type 2 attestation report — not a certificate.'},
+     {t:'17 control domains',b:'Organisation and IS (OIS), Human resources (HRS), Asset management (AM), Physical security (PS), Operations security (OPS), Identity and access (IAM), Cryptography (CRY), Communication security (COM), Portability (PI), Procurement (PRO), Product security (PSS), Sub-contractors (SSO), Incident management (SIM), Business continuity (BCM), Compliance (COS), Customer transparency (TPC), Environment parameters (Annex).'},
+     {t:'Type 1 vs Type 2 attestation',b:'Type 1: Auditor confirms controls are suitably designed at a point in time. Type 2: Auditor confirms controls operated effectively over 12 months — required by most procurement frameworks and BaFin. Cloud customers should always request Type 2. Type 1 alone does not demonstrate operational effectiveness.'},
+     {t:'Environment and context parameters (Annex)',b:'Unique to C5: the attestation must include a standardised description of the cloud environment — data centre locations, sub-processors, certifications held, supported identity federation standards, and incident notification SLAs. Directly useful for DORA Art.28 and NIS2 Art.21(3) supply chain due diligence.'}
+   ],
+   raci:[
+     {p:'C5 scope definition',r:'CISO/Cloud Architect',a:'CTO',c:'Legal, Compliance',i:'Management'},
+     {p:'Control evidence gathering',r:'Cloud Ops/SecOps',a:'CISO',c:'IT teams',i:'External auditor'},
+     {p:'Attestation report management',r:'Compliance',a:'CCO',c:'CISO, Legal',i:'Customers, BSI'},
+     {p:'Sub-processor management (SSO)',r:'Procurement/CISO',a:'CTO',c:'Legal',i:'Customers'},
+     {p:'Customer transparency (TPC)',r:'Product/Sales',a:'CCO',c:'Legal, CISO',i:'Cloud customers'}
+   ],
+   processes:[
+     {t:'C5 readiness assessment',d:'Scope cloud service → map to 17 C5 domains → evidence gap analysis → identify missing controls → remediation plan with owners → Type 1 audit readiness review → engage accredited auditor → evidence pack assembled → fieldwork → attestation report issued → publish in BSI portal.'},
+     {t:'Sub-processor change management',d:'New sub-processor identified → C5/ISO 27001 attestation requested → risk assessment → customer notification (typically 30 days per contract) → customer objection window → if approved, register updated → periodic re-assessment.'},
+     {t:'Customer due diligence support (TPC)',d:'Customer requests C5 report → check NDA → share attestation report → answer Annex questions → map C5 controls to customer\'s framework (DORA, NIS2) → follow-up through defined contact point.'}
+   ],
+   ncrs:[
+     {h:'Major — No documented key management procedures (CRY domain)',b:'Cloud provider cannot demonstrate documented cryptographic key management lifecycle procedures covering generation, storage, rotation, and destruction. C5 CRY-01 through CRY-05 require formal key management policy. Absence = critical attestation finding.'},
+     {h:'Major — Sub-processor list not current (SSO domain)',b:'Three sub-processors identified during fieldwork are not in the published register. C5 SSO-01 requires maintaining and publishing a current sub-processor list. Customers cannot meet their own NIS2/DORA obligations without accurate information.'},
+     {h:'Minor — Penetration test excludes shared infrastructure (OPS domain)',b:'Annual penetration test covered only customer-facing APIs; shared management plane was excluded. C5 OPS-20 requires testing to cover the full scope of the cloud service including management components.'}
+   ],
+   evidence:['C5 Type 2 attestation report (most recent period)','ISO 27001 certificate (if held)','Sub-processor register — current and published to customers','Cryptographic key management procedures and audit logs','Penetration test report covering full C5 scope','Incident notification procedures with customer SLAs (SIM)','Business continuity and DR test results (BCM)','Access review records for privileged cloud admins (IAM)','Environment and context parameters (Annex to attestation)'],
+   lifecycle:['Scope: Define cloud service boundary for C5 attestation','Map: 121 controls gap assessment using BSI Excel workbook','Remediate: Address gaps by domain priority (IAM, CRY, OPS first)','Type 1: Engage accredited auditor for design assessment','Operate: 12-month evidence collection period for Type 2','Type 2: Fieldwork → attestation issued → publish to customers → annual renewal'],
+   policy:`<div class="pol-section"><div class="pol-num">§1 Scope</div><div class="pol-heading">C5 Service Boundary</div><div class="pol-body">This policy applies to [Cloud Service Name] as assessed under BSI C5:2020. The service boundary includes [layers in scope]. Sub-processors are listed in the current Annex to the attestation report at [URL].</div><div class="pol-annotation">Auditor check: Scope in policy must match scope in attestation report exactly. Sub-processor list must be reachable at the stated URL.</div></div>
+<div class="pol-section"><div class="pol-num">§4 Identity and Access Management (IAM)</div><div class="pol-heading">Privileged Access Controls</div><div class="pol-body">All privileged access requires: (a) named individual accounts — no shared admins, (b) MFA enforced, (c) just-in-time access where feasible, (d) session recording for privileged sessions, (e) quarterly access review with CISO sign-off, (f) immediate revocation on role change within 4 hours.</div><div class="pol-annotation">Auditor check: C5 IAM-01 through IAM-08. Request last quarter\'s access review evidence. Informal reviews without documentation are not acceptable.</div></div>
+<div class="pol-section"><div class="pol-num">§9 Customer Transparency (TPC)</div><div class="pol-heading">Disclosure Obligations</div><div class="pol-body">Organisation will: (a) publish C5 Type 2 report to customers under NDA within 10 business days of request, (b) notify customers of sub-processor changes with 30 days advance notice, (c) maintain accurate Environment and Context Parameters in the Annex, (d) provide named contact for C5 queries.</div><div class="pol-annotation">Auditor check: TPC is a C5 differentiator. Inability to produce the report on request = TPC finding. Ask for evidence of the last two customer transparency requests and their resolution times.</div></div>`,
+   resources:[
+     {n:'BSI C5:2020 — Official Catalogue',u:'https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Empfehlungen-nach-Angriffszielen/Cloud-Computing/Anforderungskatalog-C5/anforderungskatalog-c5_node.html'},
+     {n:'BSI C5:2020 Workbook (all 121 controls)',u:'https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/CloudComputing/C5/C5-2020.html'},
+     {n:'ENISA Cloud Security Guidelines',u:'https://www.enisa.europa.eu/publications/cloud-security-guide-for-smes'}
+   ]
+  },
+  {key:'cloudgov',name:'Cloud Governance',icon:'🌐',color:'#854F0B',
+   tagline:'CSA CCM, shared responsibility, CIS benchmarks & DORA/NIS2 cloud obligations',
+   tabs:['Overview','RACI','Processes','NCRs','Evidence','Lifecycle','Framework map','Resources'],
+   concepts:[
+     {t:'CSA Cloud Controls Matrix (CCM) v4',b:'197 controls across 17 domains — the most comprehensive cloud-specific control framework. Maps to ISO 27001, SOC 2, PCI DSS, GDPR, NIS2, NIST SP 800-53, and C5. The CAIQ (Consensus Assessment Initiative Questionnaire) is the self-assessment version used in cloud procurement. CSA STAR certification is built on CCM + ISO 27001.'},
+     {t:'Shared responsibility model',b:'IaaS: provider secures physical, network, hypervisor; customer secures OS, apps, data, identity. PaaS: provider adds OS and runtime; customer secures apps and data. SaaS: provider secures almost everything; customer secures data, identity, and access configuration. Misclassification of responsibilities is the root cause of most cloud security incidents.'},
+     {t:'DORA and NIS2 cloud obligations',b:'Both regulations treat cloud providers as critical third parties. DORA Art.28 requires financial entities to register all cloud providers as ICT third parties. NIS2 Art.21(3) requires supply chain security assessment. Both hold the regulated entity responsible even if the failure is in the provider\'s infrastructure — "I used a cloud provider" is not a defence.'},
+     {t:'CIS Benchmarks for cloud hardening',b:'CIS publishes hardening benchmarks for AWS, Azure, GCP, Kubernetes, and Docker. Level 1 = basic hygiene safe to apply anywhere. Level 2 = defence in depth. CIS Benchmark compliance is increasingly required by cyber liability insurers. Automated tools: Prowler (AWS), ScoutSuite (multi-cloud), Cloud Custodian, Defender for Cloud, Prisma Cloud.'}
+   ],
+   raci:[
+     {p:'Cloud risk assessment',r:'CISO/Cloud Architect',a:'CTO',c:'Legal, Compliance',i:'Board'},
+     {p:'Cloud vendor due diligence',r:'Procurement/CISO',a:'CTO',c:'Legal',i:'Management'},
+     {p:'Shared responsibility matrix',r:'Cloud Architect',a:'CTO',c:'CISO, Legal',i:'Dev teams'},
+     {p:'CIS benchmark compliance',r:'Cloud Ops/SecOps',a:'CISO',c:'Platform team',i:'Audit'},
+     {p:'DORA/NIS2 cloud contract review',r:'Legal',a:'CCO',c:'CISO, Procurement',i:'Board'}
+   ],
+   processes:[
+     {t:'Cloud service onboarding (DORA/NIS2 compliant)',d:'Cloud service identified → criticality classification (critical ICT provider?) → C5/SOC 2/ISO 27001 attestation requested → CAIQ completed by provider → contract review against DORA Art.30 and NIS2 Art.21(3) → shared responsibility matrix documented → risk register entry created → CIS benchmark baseline scan → ongoing monitoring schedule set.'},
+     {t:'Cloud security posture management',d:'CSPM tool deployed (Prisma Cloud, Defender for Cloud, AWS Security Hub) → daily scan against CIS Benchmark → findings triaged by severity → Critical/High patched within SLA → exceptions approved by CISO → monthly posture report to management → quarterly trend review.'},
+     {t:'Cloud incident response',d:'CSPM alert or manual detection → classify (cloud provider involved?) → activate shared responsibility matrix → notify provider if provider-side → parallel customer-side investigation → DORA/NIS2 significance assessment → regulator notification if significant → post-incident review with provider → SLA enforcement if provider at fault.'}
+   ],
+   ncrs:[
+     {h:'Critical — No shared responsibility matrix documented',b:'Organisation using IaaS cannot produce a shared responsibility matrix for any workload. Without this, control ownership is ambiguous. Regulators will hold the customer responsible for the entire stack if responsibility is not documented.'},
+     {h:'Major — Cloud providers not registered as ICT third parties (DORA Art.28)',b:'Financial institution uses three hyperscale cloud providers for critical workloads but none are in the ICT third-party register. DORA Art.28 is mandatory. Absence = fundamental DORA compliance gap.'},
+     {h:'Minor — CIS Benchmark scan excludes production',b:'Automated CIS benchmark scanning covers only development and staging. Production cloud workloads excluded from scan schedule. Control environment in production is therefore unverified.'}
+   ],
+   evidence:['Cloud provider C5/SOC 2 Type 2/ISO 27001 attestations','CAIQ (CSA v4) responses from critical cloud providers','Shared responsibility matrix per cloud service','ICT third-party register entries for cloud providers (DORA Art.28)','Art.30-compliant contracts with cloud providers','CIS Benchmark scan reports — production environments','CSPM dashboard reports (monthly minimum)','Cloud access reviews — privileged and service accounts','Business continuity test results for cloud-hosted services'],
+   lifecycle:['Inventory: Map all cloud services — IaaS/PaaS/SaaS — and classify criticality','Due diligence: Collect C5/SOC 2/ISO 27001 attestations and CAIQ from providers','Contract: Apply DORA Art.30 and NIS2 Art.21(3) contract requirements','Responsibility: Document shared responsibility matrix per workload','Harden: CIS Benchmark L1 baseline → L2 for critical workloads','Monitor: CSPM scanning, quarterly reviews, annual re-attestation'],
+   frameworkmap:`<div class="sec-lbl">Cloud governance framework cross-reference</div>
+<div class="concept-row"><div class="cr-title">CSA CCM v4 → ISO 27001:2022</div><div class="cr-body">Key alignments: CCM AIS (application security) → ISO A.8.25-28; CCM IAM → ISO A.5.15-18, A.8.2-5; CCM SEF (security incident mgmt) → ISO A.5.24-28; CCM BCR (business continuity) → ISO A.5.29-30. Use this mapping to avoid duplicating cloud and ISMS controls.</div></div>
+<div class="concept-row"><div class="cr-title">CSA CCM v4 → DORA Art.21-30</div><div class="cr-body">DORA ICT risk management maps to CCM: Art.6 (ICT framework) → CCM GRC; Art.8 (protection) → CCM IAM, IVS, CCC; Art.9 (detection) → CCM SEF, LOG; Art.21.3 (supply chain) → CCM STA. Use CCM as cloud-specific implementation guidance for DORA obligations.</div></div>
+<div class="concept-row"><div class="cr-title">C5:2020 → ISO 27001:2022</div><div class="cr-body">BSI publishes a formal mapping. C5 OPS → ISO A.8.9-19; C5 IAM → ISO A.5.15-18, A.8.2-5; C5 CRY → ISO A.8.24; C5 BCM → ISO A.5.29-30. C5 TPC (customer transparency) has no direct ISO equivalent — C5-specific work still required.</div></div>
+<div class="concept-row"><div class="cr-title">NIS2 Art.21 → CIS Controls v8</div><div class="cr-body">Art.21(2)(a) risk analysis → CIS IG1 (Controls 1-6); Art.21(2)(b) incident handling → CIS Control 17; Art.21(2)(c) business continuity → CIS Control 11; Art.21(2)(e) network security → CIS Controls 12-13; Art.21(2)(f) vulnerability handling → CIS Control 7.</div></div>
+<div class="concept-row"><div class="cr-title">Shared responsibility by service model</div><div class="cr-body"><table class="raci-table"><tr><th>Layer</th><th>IaaS</th><th>PaaS</th><th>SaaS</th></tr><tr><td>Physical / network</td><td>Provider</td><td>Provider</td><td>Provider</td></tr><tr><td>Hypervisor / OS</td><td>Provider/Customer</td><td>Provider</td><td>Provider</td></tr><tr><td>Application</td><td>Customer</td><td>Customer</td><td>Provider</td></tr><tr><td>Data</td><td>Customer</td><td>Customer</td><td>Customer</td></tr><tr><td>Identity / access</td><td>Customer</td><td>Customer</td><td>Customer</td></tr></table></div></div>`,
+   resources:[
+     {n:'CSA Cloud Controls Matrix v4',u:'https://cloudsecurityalliance.org/research/cloud-controls-matrix/'},
+     {n:'ENISA Cloud Security Guide',u:'https://www.enisa.europa.eu/publications/cloud-security-guide-for-smes'},
+     {n:'CIS Benchmarks — AWS, Azure, GCP',u:'https://www.cisecurity.org/cis-benchmarks/'},
+     {n:'BSI C5:2020 Official Catalogue',u:'https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Empfehlungen-nach-Angriffszielen/Cloud-Computing/Anforderungskatalog-C5/anforderungskatalog-c5_node.html'}
+   ]
+  }
+];
+
+function renderStudyHub(){
+  const list = document.getElementById('book-list');
+  list.innerHTML = BOOKS.map((b,bi)=>{
+    const tabContents = buildBookTabs(b,bi);
+    return `<div class="book-card" id="book-${b.key}">
+      <div class="book-head" onclick="toggleBook('${b.key}')">
+        <div class="book-ico" style="background:${b.color}22">${b.icon}</div>
+        <div class="book-meta">
+          <div class="book-name">${b.name}</div>
+          <div class="book-tagline">${b.tagline}</div>
+        </div>
+        <span class="book-arr" id="arr-${b.key}">▶</span>
+      </div>
+      <div class="book-body" id="body-${b.key}">
+        <div class="book-tabs">${b.tabs.map((t,i)=>`<button class="btab${i===0?' active':''}" onclick="switchTab('${b.key}',${i})">${t}</button>`).join('')}</div>
+        ${tabContents.map((c,i)=>`<div class="book-panel${i===0?' active':''}" id="pan-${b.key}-${i}">${c}</div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildBookTabs(b,bi){
+  const tabs=[];
+  // Tab 0: Overview/concepts
+  tabs.push(`<div class="sec-lbl">Core concepts</div>`+b.concepts.map(c=>`<div class="concept-row"><div class="cr-title">${c.t}</div><div class="cr-body">${c.b}</div></div>`).join(''));
+  // Tab 1: RACI
+  tabs.push(`<div class="sec-lbl">Responsibility matrix</div><table class="raci-table"><tr><th>Process</th><th><span class="raci-r">R</span></th><th><span class="raci-a">A</span></th><th><span class="raci-c">C</span></th><th><span class="raci-i">I</span></th></tr>`+b.raci.map(r=>`<tr><td>${r.p}</td><td class="raci-r">${r.r}</td><td class="raci-a">${r.a}</td><td class="raci-c">${r.c}</td><td class="raci-i">${r.i}</td></tr>`).join('')+`</table><div class="callout" style="margin-top:12px"><div class="callout-ico">💡</div><div class="callout-body"><strong>R</strong>=Responsible (does the work) <strong>A</strong>=Accountable (owns the outcome) <strong>C</strong>=Consulted (input required) <strong>I</strong>=Informed (notified of outcome)</div></div>`);
+  // Tab 2: Processes
+  tabs.push(`<div class="sec-lbl">Day-to-day process flows</div>`+b.processes.map((p,i)=>`<div class="process-step"><div class="ps-num">${i+1}</div><div class="ps-body"><div class="ps-title">${p.t}</div><div class="ps-desc">${p.d}</div></div></div>`).join(''));
+  // Tab 3: NCRs
+  tabs.push(`<div class="sec-lbl">Non-conformity examples</div>`+b.ncrs.map(n=>`<div class="ncr-card"><div class="ncr-head">${n.h}</div><div class="ncr-body">${n.b}</div></div>`).join(''));
+  // Tab 4: Evidence
+  tabs.push(`<div class="sec-lbl">Evidence checklist</div>`+b.evidence.map(e=>`<div class="ev-item"><div class="ev-ico">📄</div><div class="ev-text">${e}</div></div>`).join(''));
+  // Tab 5: Lifecycle
+  tabs.push(`<div class="sec-lbl">Implementation lifecycle</div>`+b.lifecycle.map((l,i)=>{
+    const parts=l.split(':');
+    return `<div class="life-step"><div class="life-num">${i+1}</div><div class="life-body"><div class="life-title">${parts[0]}</div><div class="life-desc">${parts.slice(1).join(':').trim()}</div></div></div>`;
+  }).join(''));
+  // Remaining tabs (policy, DPIA, DPO, incident, exam, resources)
+  b.tabs.slice(6).forEach((tabName,ti)=>{
+    const lname=tabName.toLowerCase().replace(/\s+/g,'');
+    if(lname.includes('resource')){
+      tabs.push(`<div class="sec-lbl">Key resources</div>`+b.resources.map(r=>`<div class="res-link"><div class="res-icon">🔗</div><div class="res-body"><div class="res-name">${r.n}</div><a class="res-url" href="${r.u}" target="_blank">${r.u.substring(0,50)}...</a></div></div>`).join(''));
+    } else if(lname.includes('policy')||lname.includes('draft')){
+      tabs.push(`<div class="sec-lbl">Annotated policy draft</div><div class="pol-doc">${b.policy}</div>`);
+    } else if(lname.includes('dpia')){
+      tabs.push(`<div class="sec-lbl">DPIA template (Art.35)</div><div class="pol-doc">${b.dpia}</div>`);
+    } else if(lname.includes('dpo')){
+      tabs.push(`<div class="sec-lbl">DPO annual report template</div><div class="pol-doc">${b.dporeport}</div>`);
+    } else if(lname.includes('incident')){
+      tabs.push(`<div class="sec-lbl">ICT incident report template (DORA Art.23)</div><div class="pol-doc">${b.incident}</div>`);
+    } else if(lname.includes('framework')){
+      tabs.push(b.frameworkmap);
+    } else if(lname.includes('exam')){
+      tabs.push(b.exam);
+    } else if(lname.includes('framework')||lname.includes('map')){
+      tabs.push(b.frameworkmap||'');
+    } else {
+      tabs.push(`<div class="sec-lbl">${tabName}</div><div style="color:var(--tx2);font-size:13px">Content coming soon.</div>`);
+    }
+  });
+  return tabs;
+}
+
+function toggleBook(key){
+  const body=document.getElementById(`body-${key}`);
+  const arr=document.getElementById(`arr-${key}`);
+  const open=body.style.display==='block';
+  body.style.display=open?'none':'block';
+  arr.textContent=open?'▶':'▼';
+}
+function switchTab(key,idx){
+  const book=BOOKS.find(b=>b.key===key);
+  book.tabs.forEach((_,i)=>{
+    const pan=document.getElementById(`pan-${key}-${i}`);
+    const btns=document.querySelectorAll(`#book-${key} .btab`);
+    if(pan)pan.classList.toggle('active',i===idx);
+    if(btns[i])btns[i].classList.toggle('active',i===idx);
+  });
+}
+
+function renderBM(){
+  const wrap=document.getElementById('bm-wrap');
+  if(!bookmarks.length){
+    wrap.innerHTML=`<div class="bm-empty"><div class="be-ico">⭐</div><div class="be-txt">No bookmarks yet. Open any framework in the Reference tab and tap the star to save it here.</div></div>`;
+    return;
+  }
+  wrap.innerHTML=bookmarks.map(id=>{
+    const fw=FW.find(f=>f.id===id);
+    if(!fw)return'';
+    const cc=CAT_COLORS[fw.cat]||{bg:'#f3f4f6',tx:'#374151'};
+    return `<div class="bm-card">
+      <div class="bm-card-ico" style="background:${cc.bg}">${fw.icon}</div>
+      <div class="bm-card-meta">
+        <div class="bm-card-name">${fw.name}</div>
+        <div class="bm-card-desc">${fw.controls} controls · ${cc.label}</div>
+      </div>
+      <span class="bm-rm" onclick="toggleBM('${fw.id}')" title="Remove bookmark">✕</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleDark(){
+  const d=document.documentElement;
+  const isDark=d.hasAttribute('data-dark');
+  if(isDark){d.removeAttribute('data-dark');document.getElementById('dark-btn').textContent='🌙';}
+  else{d.setAttribute('data-dark','');document.getElementById('dark-btn').textContent='☀️';}
+  localStorage.setItem('grc_dark',isDark?'':'1');
+}
+
+(function init(){
+  if(localStorage.getItem('grc_dark')==='1'){
+    document.documentElement.setAttribute('data-dark','');
+    document.getElementById('dark-btn').textContent='☀️';
+  }
+  renderRef();
+  renderStudyHub();
+  updateBMCount();
+  const total=FW.reduce((s,f)=>s+f.controls,0);
+  document.getElementById('hdr-sub').textContent=`${FW.length} frameworks · ${total} controls · 8 study books`;
+})();
+</script>
+</body>
+</html>
